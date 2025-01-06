@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
 import { LoadScript, Autocomplete } from "@react-google-maps/api";
