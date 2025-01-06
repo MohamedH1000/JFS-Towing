@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import nodemailer from "nodemailer";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2022-08-01",
+  apiVersion: "2022-11-15",
 });
 
 // Use Nodemailer or another email service to send the email
