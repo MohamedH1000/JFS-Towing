@@ -7,8 +7,18 @@ const purgecss = [
       "./components/*.js",
       "./components/**/*.js",
     ],
-    whitelistPatterns: [/^slick-/],
-    defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
+    whitelistPatterns: [
+      /^slick-/,
+      /^animation-/,
+      /^custom-list/,
+      /^circle-check/,
+      /^check/,
+    ],
+    defaultExtractor: (content) => {
+      const matches = content.match(/[\w-/:]+(?<!:)/g) || [];
+      console.log(matches); // To debug the extracted class names
+      return matches;
+    },
   },
 ];
 module.exports = {

@@ -137,8 +137,6 @@ const Bookings = () => {
       const session = await response.json();
 
       // Redirect to Stripe Checkout
-      const { id } = session;
-      const result = await stripe.redirectToCheckout({ sessionId: id });
 
       if (session.id) {
         // Redirect to Stripe Checkout

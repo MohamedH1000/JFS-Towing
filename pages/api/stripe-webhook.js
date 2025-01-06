@@ -1,14 +1,9 @@
-import { buffer } from "micro"; // To handle raw body content
-import Stripe from "stripe";
+import { buffer } from "micro";
 import nodemailer from "nodemailer";
+import { stripe } from "../../lib/stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2022-11-15",
-});
-
-// Use Nodemailer or another email service to send the email
 const transporter = nodemailer.createTransport({
-  service: "Gmail", // Use your email service here
+  service: "Gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
@@ -17,11 +12,11 @@ const transporter = nodemailer.createTransport({
 
 export const config = {
   api: {
-    bodyParser: false, // Disabling body parsing so we can process the raw payload
+    bodyParser: false,
   },
 };
 
-const sendEmail = (to, subject, text) => {
+const sendEmail = async (to, subject, text) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
@@ -29,48 +24,54 @@ const sendEmail = (to, subject, text) => {
     text,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log("Error sending email:", error);
-    } else {
-      console.log("Email sent:", info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.response);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw error; // Re-throw to handle appropriately
+  }
 };
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const sig = req.headers["stripe-signature"];
-      const reqBuffer = await buffer(req); // Raw body
+      const reqBuffer = await buffer(req);
 
       const event = stripe.webhooks.constructEvent(
         reqBuffer.toString(),
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET // Your Stripe webhook secret
+        process.env.STRIPE_WEBHOOK_SECRET
       );
+
+      console.log("Received event:", event.type);
 
       if (event.type === "checkout.session.completed") {
         const session = event.data.object;
 
-        // Payment was successful, now send the email
         const customerEmail = session.customer_email;
-        const amount = session.amount_total / 100; // Stripe sends the amount in cents
+        const amount = session.amount_total / 100; // Convert cents to dollars
         const description =
-          session.line_items[0]?.description || "Booking Service Payment";
+          session.line_items?.[0]?.description || "Booking Service Payment";
+
+        if (!customerEmail) {
+          console.error("Customer email is missing.");
+          return res.status(400).send("Customer email is missing.");
+        }
 
         const emailSubject = "Payment Confirmation";
-        const emailText = `Hello ${session.customer_name},\n\nYour payment of $${amount} for ${description} was successful. Thank you!`;
+        const emailText = `Hello,\n\nYour payment of $${amount} for ${description} was successful. Thank you!`;
 
-        // Send an email to the customer
-        sendEmail(customerEmail, emailSubject, emailText);
+        await sendEmail(customerEmail, emailSubject, emailText);
 
         res.status(200).json({ received: true });
       } else {
-        res.status(400).send(`Unhandled event type ${event.type}`);
+        console.log(`Unhandled event type: ${event.type}`);
+        res.status(400).send(`Unhandled event type: ${event.type}`);
       }
     } catch (err) {
-      console.error("Webhook Error:", err);
+      console.error("Webhook Error:", err.message);
       res.status(500).send("Webhook Error: " + err.message);
     }
   } else {

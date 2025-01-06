@@ -48,5 +48,14 @@ module.exports = {
       boxShadow: ["active", "hover"],
     },
   },
-  plugins: [],
+  safelist: [
+    "animation-hover",
+    "slick-dots",
+    "slick-dots .slick-active span",
+    "custom-list",
+    "circle-check",
+    "check",
+    // Add other custom classes as needed
+  ],
+  plugins: ["postcss-import", "tailwindcss", "autoprefixer"],
 };
