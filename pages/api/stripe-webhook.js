@@ -121,7 +121,7 @@ export default async function handler(req, res) {
         // Optionally send an email to the site administrator as well
         await sendMail({
           email: SMTP_SERVER_USERNAME,
-          sendTo: SITE_MAIL_RECIEVER,
+          sendTo: customerEmail,
           subject: `New Booking Service Request from ${name}`,
           text: `A new service request has been made by ${name}. Amount Paid: $${amount}.`,
           html: emailContent,
