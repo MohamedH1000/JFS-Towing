@@ -118,9 +118,11 @@ const Bookings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // console.log("Form submitted:", formData);
+
     try {
       const stripe = await stripePromise;
+
+      // Prepare the form data for the checkout session
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: {
@@ -131,12 +133,22 @@ const Bookings = () => {
           currency: "usd", // Currency type
           name: formData.name,
           phone: formData.phone,
-          description: "Booking Service Payment", // Use your custom description
+          description: "Booking Service Payment", // Custom description
+          pickupLocation: formData.pickupLocation, // Pickup location
+          dropoffLocation: formData.dropoffLocation, // Dropoff location
+          dateTimeOption: formData.dateTimeOption, // ASAP or Scheduled
+          serviceDate: formData.serviceDate, // Service date (if scheduled)
+          serviceTime: formData.serviceTime, // Service time (if scheduled)
+          year: formData.year, // Vehicle year
+          make: formData.make, // Vehicle make
+          model: formData.model, // Vehicle model
+          brokenAxle: formData.brokenAxle, // Broken axle info
+          parkingGarage: formData.parkingGarage, // Parking garage info
+          pictures: formData.pictures, // Pictures of the vehicle
         }),
       });
-      const session = await response.json();
 
-      // Redirect to Stripe Checkout
+      const session = await response.json();
 
       if (session.id) {
         // Redirect to Stripe Checkout

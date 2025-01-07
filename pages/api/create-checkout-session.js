@@ -2,7 +2,24 @@ import { stripe } from "../../lib/stripe";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { amount, currency, name, phone, description } = req.body;
+    const {
+      amount,
+      currency,
+      name,
+      phone,
+      description,
+      pickupLocation,
+      dropoffLocation,
+      dateTimeOption,
+      serviceDate,
+      serviceTime,
+      year,
+      make,
+      model,
+      brokenAxle,
+      parkingGarage,
+      pictures,
+    } = req.body;
 
     try {
       const session = await stripe.checkout.sessions.create({
@@ -22,7 +39,22 @@ export default async function handler(req, res) {
         expand: ["line_items"],
         mode: "payment",
         success_url: `${req.headers.origin}/success`, // On success
-        cancel_url: `${req.headers.origin}/cancel`, // On cancel
+        cancel_url: `${req.headers.origin}/cancel`, // On cancel'
+        metadata: {
+          pickupLocation: JSON.stringify(pickupLocation),
+          dropoffLocation: JSON.stringify(dropoffLocation),
+          dateTimeOption: dateTimeOption,
+          serviceDate: serviceDate,
+          serviceTime: serviceTime,
+          year: year,
+          make: make,
+          model: model,
+          brokenAxle: brokenAxle,
+          parkingGarage: parkingGarage,
+          pictures: JSON.stringify(pictures), // If pictures are URLs or data URIs
+          name: name,
+          phone: phone,
+        },
       });
 
       res.status(200).json({ id: session.id });
