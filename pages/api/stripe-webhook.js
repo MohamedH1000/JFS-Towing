@@ -9,15 +9,15 @@ const SITE_MAIL_RECIEVER = process.env.SITE_MAIL_RECIEVER;
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  host: "mail.nashamatech.tech",
+  host: SMTP_SERVER_HOST,
   port: 587,
-  secure: true,
+  secure: false,
   auth: {
-    user: "info@nashamatech.tech",
-    pass: "Aziz@123",
+    user: SMTP_SERVER_USERNAME,
+    pass: SMTP_SERVER_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: false, // Skip certificate validation if needed
+    rejectUnauthorized: true, // Skip certificate validation if needed
   },
 });
 
@@ -47,7 +47,7 @@ export async function sendMail({ email, sendTo, subject, text, html }) {
     return;
   }
   const info = await transporter.sendMail({
-    from: email,
+    from: `"Your App Name" <${SMTP_SERVER_USERNAME}>`,
     to: sendTo || SITE_MAIL_RECIEVER,
     subject: subject,
     text: text,
@@ -80,8 +80,8 @@ export default async function handler(req, res) {
 
         // Send an email to the customer
         await sendMail({
-          email: SMTP_SERVER_USERNAME, // Email sender
-          sendTo: customerEmail, // Customer's email
+          email: SMTP_SERVER_USERNAME,
+          sendTo: customerEmail,
           subject: "Payment Confirmation",
           text: `Hello ${customerName},\n\nYour payment of $${amount} for ${description} was successful.\n\nThank you for your business!`,
           html: `<p>Hello ${customerName},</p>
