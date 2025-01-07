@@ -19,6 +19,7 @@ export default async function handler(req, res) {
             quantity: 1, // You can modify quantity based on the use case
           },
         ],
+        expand: ["line_items"],
         mode: "payment",
         success_url: `${req.headers.origin}/success`, // On success
         cancel_url: `${req.headers.origin}/cancel`, // On cancel

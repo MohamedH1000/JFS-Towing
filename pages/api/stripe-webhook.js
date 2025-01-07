@@ -50,19 +50,22 @@ export default async function handler(req, res) {
       if (event.type === "checkout.session.completed") {
         const session = event.data.object;
 
-        const customerEmail = session.customer_email;
-        const amount = session.amount_total / 100; // Convert cents to dollars
-        const description =
-          session.line_items?.[0]?.description || "Booking Service Payment";
-
+        // Handle customer email
+        const customerEmail =
+          session.customer_email || session.customer_details?.email;
         if (!customerEmail) {
           console.error("Customer email is missing.");
           return res.status(400).send("Customer email is missing.");
         }
 
+        // Amount and description
+        const amount = session.amount_total / 100;
+        const description = "Booking Service Payment";
+
         const emailSubject = "Payment Confirmation";
         const emailText = `Hello,\n\nYour payment of $${amount} for ${description} was successful. Thank you!`;
 
+        // Send email
         await sendEmail(customerEmail, emailSubject, emailText);
 
         res.status(200).json({ received: true });
