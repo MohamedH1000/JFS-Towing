@@ -107,7 +107,6 @@ export default async function handler(req, res) {
         <p><strong>Model:</strong> ${model}</p>
         <p><strong>Broken Axle:</strong> ${brokenAxle}</p>
         <p><strong>Parking Garage:</strong> ${parkingGarage}</p>
-        <p><strong>Pictures:</strong> ${pictures.join(", ")}</p>
         <p><strong>Amount Paid:</strong> $${amount}</p>
         <p><strong>Description:</strong> ${description}</p>
       `;
