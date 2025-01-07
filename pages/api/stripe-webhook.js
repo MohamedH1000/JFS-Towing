@@ -2,12 +2,31 @@ import { buffer } from "micro";
 import nodemailer from "nodemailer";
 import { stripe } from "../../lib/stripe";
 
+const SMTP_SERVER_HOST = process.env.SMTP_SERVER_HOST;
+const SMTP_SERVER_USERNAME = process.env.SMTP_SERVER_USERNAME;
+const SMTP_SERVER_PASSWORD = process.env.SMTP_SERVER_PASSWORD;
+const SITE_MAIL_RECIEVER = process.env.SITE_MAIL_RECIEVER;
+
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
+  service: "gmail",
+  host: "mail.nashamatech.tech",
+  port: 587,
+  secure: true,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: "info@nashamatech.tech",
+    pass: "Aziz@123",
   },
+  tls: {
+    rejectUnauthorized: false, // Skip certificate validation if needed
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("SMTP Connection Error:", error);
+  } else {
+    console.log("SMTP Server is ready to send messages:", success);
+  }
 });
 
 export const config = {
@@ -15,23 +34,29 @@ export const config = {
     bodyParser: false,
   },
 };
-
-const sendEmail = async (to, subject, text) => {
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to,
-    subject,
-    text,
-  };
-
+export async function sendMail({ email, sendTo, subject, text, html }) {
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.response);
+    await transporter.verify();
   } catch (error) {
-    console.error("Error sending email:", error);
-    throw error; // Re-throw to handle appropriately
+    console.error(
+      "Something Went Wrong",
+      SMTP_SERVER_USERNAME,
+      SMTP_SERVER_PASSWORD,
+      error
+    );
+    return;
   }
-};
+  const info = await transporter.sendMail({
+    from: email,
+    to: sendTo || SITE_MAIL_RECIEVER,
+    subject: subject,
+    text: text,
+    html: html ? html : "",
+  });
+  console.log("Message Sent", info.messageId);
+  console.log("Mail sent to", SITE_MAIL_RECIEVER);
+  return info;
+}
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -45,37 +70,32 @@ export default async function handler(req, res) {
         process.env.STRIPE_WEBHOOK_SECRET
       );
 
-      console.log("Received event:", event.type);
-
       if (event.type === "checkout.session.completed") {
         const session = event.data.object;
 
-        // Handle customer email
-        const customerEmail =
-          session.customer_email || session.customer_details?.email;
-        if (!customerEmail) {
-          console.error("Customer email is missing.");
-          return res.status(400).send("Customer email is missing.");
-        }
-
-        // Amount and description
-        const amount = session.amount_total / 100;
+        const customerEmail = session.customer_details?.email;
+        const customerName = session.customer_details?.name;
+        const amount = (session.amount_total / 100).toFixed(2); // Convert to dollars
         const description = "Booking Service Payment";
 
-        const emailSubject = "Payment Confirmation";
-        const emailText = `Hello,\n\nYour payment of $${amount} for ${description} was successful. Thank you!`;
-
-        // Send email
-        await sendEmail(customerEmail, emailSubject, emailText);
+        // Send an email to the customer
+        await sendMail({
+          email: SMTP_SERVER_USERNAME, // Email sender
+          sendTo: customerEmail, // Customer's email
+          subject: "Payment Confirmation",
+          text: `Hello ${customerName},\n\nYour payment of $${amount} for ${description} was successful.\n\nThank you for your business!`,
+          html: `<p>Hello ${customerName},</p>
+                 <p>Your payment of <strong>$${amount}</strong> for <strong>${description}</strong> was successful.</p>
+                 <p>Thank you for your business!</p>`,
+        });
 
         res.status(200).json({ received: true });
       } else {
-        console.log(`Unhandled event type: ${event.type}`);
         res.status(400).send(`Unhandled event type: ${event.type}`);
       }
     } catch (err) {
-      console.error("Webhook Error:", err.message);
-      res.status(500).send("Webhook Error: " + err.message);
+      console.error("Webhook Error:", err);
+      res.status(500).send(`Webhook Error: ${err.message}`);
     }
   } else {
     res.status(405).send("Method Not Allowed");
