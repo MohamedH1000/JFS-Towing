@@ -129,29 +129,35 @@ const Bookings = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: totalCost, // Total cost in dollars (not converted to cents)
-          currency: "usd", // Currency type
+          amount: totalCost,
+          currency: "usd",
           name: formData.name,
           phone: formData.phone,
-          description: "Booking Service Payment", // Custom description
-          pickupLocation: formData.pickupLocation, // Pickup location
-          dropoffLocation: formData.dropoffLocation, // Dropoff location
-          dateTimeOption: formData.dateTimeOption, // ASAP or Scheduled
-          serviceDate: formData.serviceDate, // Service date (if scheduled)
-          serviceTime: formData.serviceTime, // Service time (if scheduled)
-          year: formData.year, // Vehicle year
-          make: formData.make, // Vehicle make
-          model: formData.model, // Vehicle model
-          brokenAxle: formData.brokenAxle, // Broken axle info
-          parkingGarage: formData.parkingGarage, // Parking garage info
-          pictures: formData.pictures, // Pictures of the vehicle
+          description: "Booking Service Payment",
+          pickupLocation: formData.pickupLocation,
+          dropoffLocation: formData.dropoffLocation,
+          dateTimeOption: formData.dateTimeOption,
+          serviceDate: formData.serviceDate,
+          serviceTime: formData.serviceTime,
+          year: formData.year,
+          make: formData.make,
+          model: formData.model,
+          brokenAxle: formData.brokenAxle,
+          parkingGarage: formData.parkingGarage,
+          pictures: formData.pictures,
         }),
       });
 
-      const session = await response.json();
+      if (!response.ok) {
+        console.error(
+          "Failed to create checkout session:",
+          await response.text()
+        );
+        return;
+      }
 
+      const session = await response.json();
       if (session.id) {
-        // Redirect to Stripe Checkout
         const { id } = session;
         const result = await stripe.redirectToCheckout({ sessionId: id });
 

@@ -2,7 +2,24 @@ import { stripe } from "../../lib/stripe";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { amount, currency, name, phone, description } = req.body;
+    const {
+      amount,
+      currency,
+      name,
+      phone,
+      description,
+      pickupLocation,
+      dropoffLocation,
+      dateTimeOption,
+      serviceDate,
+      serviceTime,
+      year,
+      make,
+      model,
+      brokenAxle,
+      parkingGarage,
+      pictures,
+    } = req.body;
 
     try {
       const session = await stripe.checkout.sessions.create({
@@ -10,35 +27,33 @@ export default async function handler(req, res) {
         line_items: [
           {
             price_data: {
-              currency: "usd",
+              currency: currency,
               product_data: {
-                name: "Booking Service",
+                name: description,
               },
-              unit_amount: 5000, // Amount in cents
+              unit_amount: Math.round(amount * 100), // Convert to cents
             },
             quantity: 1,
           },
         ],
         expand: ["line_items"],
         mode: "payment",
-        success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+        success_url: `${req.headers.origin}/success`,
+        cancel_url: `${req.headers.origin}/cancel`,
         metadata: {
-          // Flat key-value pairs for each field in formData
-          pickupLocation: JSON.stringify(formData.pickupLocation),
-          dropoffLocation: JSON.stringify(formData.dropoffLocation),
-          dateTimeOption: formData.dateTimeOption,
-          serviceDate: formData.serviceDate,
-          serviceTime: formData.serviceTime,
-          year: formData.year,
-          make: formData.make,
-          model: formData.model,
-          brokenAxle: formData.brokenAxle,
-          parkingGarage: formData.parkingGarage,
-          pictures: JSON.stringify(formData.pictures), // If pictures are URLs or data URIs
-          name: formData.name,
-          countryCode: formData.countryCode,
-          phone: formData.phone,
+          pickupLocation: JSON.stringify(pickupLocation),
+          dropoffLocation: JSON.stringify(dropoffLocation),
+          dateTimeOption: dateTimeOption,
+          serviceDate: serviceDate,
+          serviceTime: serviceTime,
+          year: year,
+          make: make,
+          model: model,
+          brokenAxle: brokenAxle,
+          parkingGarage: parkingGarage,
+          pictures: JSON.stringify(pictures),
+          name: name,
+          phone: phone,
         },
       });
 
