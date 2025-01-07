@@ -47,7 +47,7 @@ export async function sendMail({ email, sendTo, subject, text, html }) {
     return;
   }
   const info = await transporter.sendMail({
-    from: "Your App Name"`<${SMTP_SERVER_USERNAME}>`,
+    from: SMTP_SERVER_USERNAME,
     to: sendTo || SITE_MAIL_RECIEVER,
     subject: subject,
     text: text,
