@@ -34,7 +34,6 @@ export const config = {
     bodyParser: false,
   },
 };
-
 export async function sendMail({ email, sendTo, subject, text, html }) {
   try {
     await transporter.verify();
@@ -47,9 +46,8 @@ export async function sendMail({ email, sendTo, subject, text, html }) {
     );
     return;
   }
-
   const info = await transporter.sendMail({
-    from: `"Your App Name" <${SMTP_SERVER_USERNAME}>`,
+    from: "Your App Name"`<${SMTP_SERVER_USERNAME}>`,
     to: sendTo || SITE_MAIL_RECIEVER,
     subject: subject,
     text: text,
@@ -74,57 +72,21 @@ export default async function handler(req, res) {
 
       if (event.type === "checkout.session.completed") {
         const session = event.data.object;
-        const pickupLocation = JSON.parse(session.metadata.pickupLocation);
-        const dropoffLocation = JSON.parse(session.metadata.dropoffLocation);
-        const pictures = JSON.parse(session.metadata.pictures);
 
-        const {
-          name,
-          phone,
-          dateTimeOption,
-          serviceDate,
-          serviceTime,
-          year,
-          make,
-          model,
-          brokenAxle,
-          parkingGarage,
-        } = session.metadata;
         const customerEmail = session.customer_details?.email;
         const customerName = session.customer_details?.name;
         const amount = (session.amount_total / 100).toFixed(2); // Convert to dollars
         const description = "Booking Service Payment";
 
-        // Create the email content
-        const emailContent = `
-          <h1>Service Request Details</h1>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${customerEmail}</p>
-          <p><strong>Phone:</strong> ${phone}</p>
-          <p><strong>Pickup Location:</strong> ${pickupLocation.address}</p>
-          <p><strong>Dropoff Location:</strong> ${dropoffLocation.address}</p>
-          <p><strong>Date and Time Option:</strong> ${dateTimeOption}</p>
-          <p><strong>Service Date:</strong> ${serviceDate}</p>
-          <p><strong>Service Time:</strong> ${serviceTime}</p>
-          <p><strong>Year:</strong> ${year}</p>
-          <p><strong>Make:</strong> ${make}</p>
-          <p><strong>Model:</strong> ${model}</p>
-          <p><strong>Broken Axle:</strong> ${brokenAxle}</p>
-          <p><strong>Parking Garage:</strong> ${parkingGarage}</p>
-          <p><strong>Pictures:</strong> ${pictures.join(", ")}</p>
-          <p><strong>Amount Paid:</strong> $${amount}</p>
-          <p><strong>Description:</strong> ${description}</p>
-        `;
-
         // Send an email to the customer
-
-        // Optionally send an email to the site administrator as well
         await sendMail({
           email: SMTP_SERVER_USERNAME,
           sendTo: customerEmail,
-          subject: `New Booking Service Request from ${name}`,
-          text: `A new service request has been made by ${name}. Amount Paid: $${amount}.`,
-          html: emailContent,
+          subject: "Payment Confirmation",
+          text: `Hello ${customerName},\n\nYour payment of $${amount} for ${description} was successful.\n\nThank you for your business!`,
+          html: `<p>Hello ${customerName},</p>
+                 <p>Your payment of <strong>$${amount}</strong> for <strong>${description}</strong> was successful.</p>
+                 <p>Thank you for your business!</p>`,
         });
 
         res.status(200).json({ received: true });

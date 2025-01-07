@@ -10,19 +10,36 @@ export default async function handler(req, res) {
         line_items: [
           {
             price_data: {
-              currency: currency, // 'usd'
+              currency: "usd",
               product_data: {
-                name: description, // Use the description or product name
+                name: "Booking Service",
               },
-              unit_amount: Math.round(amount * 100), // Convert dollars to cents
+              unit_amount: 5000, // Amount in cents
             },
-            quantity: 1, // You can modify quantity based on the use case
+            quantity: 1,
           },
         ],
         expand: ["line_items"],
         mode: "payment",
-        success_url: `${req.headers.origin}/success`, // On success
-        cancel_url: `${req.headers.origin}/cancel`, // On cancel'
+        success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+        metadata: {
+          // Flat key-value pairs for each field in formData
+          pickupLocation: JSON.stringify(formData.pickupLocation),
+          dropoffLocation: JSON.stringify(formData.dropoffLocation),
+          dateTimeOption: formData.dateTimeOption,
+          serviceDate: formData.serviceDate,
+          serviceTime: formData.serviceTime,
+          year: formData.year,
+          make: formData.make,
+          model: formData.model,
+          brokenAxle: formData.brokenAxle,
+          parkingGarage: formData.parkingGarage,
+          pictures: JSON.stringify(formData.pictures), // If pictures are URLs or data URIs
+          name: formData.name,
+          countryCode: formData.countryCode,
+          phone: formData.phone,
+        },
       });
 
       res.status(200).json({ id: session.id });
