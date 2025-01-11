@@ -20,6 +20,11 @@ class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
+        {/* <script
+          src={`https://maps.googleapis.com/maps/api/js?key=mfaKrkjifwxSeoVqd32HYBy_Ds2q_dk&libraries=geometry`}
+          async
+          defer
+        ></script> */}
       </Html>
     );
   }

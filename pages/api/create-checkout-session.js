@@ -43,6 +43,8 @@ export default async function handler(req, res) {
         metadata: {
           pickupLocation: JSON.stringify(pickupLocation),
           dropoffLocation: JSON.stringify(dropoffLocation),
+          lat: pickupLocation.geometry.lat,
+          lng: pickupLocation.geometry.lng,
           dateTimeOption: dateTimeOption,
           serviceDate: serviceDate,
           serviceTime: serviceTime,
