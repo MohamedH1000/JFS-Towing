@@ -99,8 +99,8 @@ export default async function handler(req, res) {
         <p><strong>Phone:</strong> ${phone}</p>
         <p><strong>Pickup Location:</strong> ${pickupLocation.address}</p>
         <p><strong>Dropoff Location:</strong> ${dropoffLocation.address}</p>
-        <p><strong>Dropoff Location:</strong> ${pickupLocation.geometry.lat}</p>
-        <p><strong>Dropoff Location:</strong> ${dropoffLocation.geometry.lng}</p>
+        <p><strong>Dropoff Location:</strong> ${pickupLocation.geometry.location.lat}</p>
+        <p><strong>Dropoff Location:</strong> ${dropoffLocation.geometry.location.lng}</p>
         <p><strong>Date and Time Option:</strong> ${dateTimeOption}</p>
         <p><strong>Service Date:</strong> ${serviceDate}</p>
         <p><strong>Service Time:</strong> ${serviceTime}</p>
