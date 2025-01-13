@@ -9,17 +9,14 @@ import {
 } from "@react-google-maps/api";
 import { loadStripe } from "@stripe/stripe-js";
 import { Loader } from "lucide-react";
-
-const API_KEY = "AIzaSyB-mfaKrkjifwxSeoVqd32HYBy_Ds2q_dk"; // ضع مفتاح API الخاص بك هنا
+import PickUpLocation from "./components/PickUpLocation";
+import DropOffLocation from "./components/DropOffLocation";
 
 const Bookings = () => {
   const [yearOptions, setYearOptions] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [pickupAutocomplete, setPickupAutocomplete] = useState(null);
-  const [dropoffAutocomplete, setDropoffAutocomplete] = useState(null);
-  const [pickupMapCenter, setPickupMapCenter] = useState(null);
-  const [dropoffMapCenter, setDropoffMapCenter] = useState(null);
+
   const [map, setMap] = useState(null); // To store map instance
   const [geocoder, setGeocoder] = useState(null); //
 
@@ -39,7 +36,7 @@ const Bookings = () => {
     countryCode: "+1",
     phone: "",
   });
-  console.log(formData);
+  // console.log(formData);
   const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   );
@@ -64,111 +61,6 @@ const Bookings = () => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const onPickupLoad = (autocompleteInstance) => {
-    setPickupAutocomplete(autocompleteInstance);
-  };
-
-  const onDropoffLoad = (autocompleteInstance) => {
-    // console.log(autocompleteInstance, "autocompleteInstance");
-    setDropoffAutocomplete(autocompleteInstance);
-  };
-
-  const onPickupPlaceChanged = () => {
-    if (pickupAutocomplete) {
-      const place = pickupAutocomplete.getPlace();
-      if (place.geometry && place.geometry.location) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-
-        // Update formData with plain lat and lng values
-        setFormData((prev) => ({
-          ...prev,
-          pickupLocation: {
-            address: place.formatted_address,
-            geometry: {
-              location: { lat, lng }, // Use plain object for location
-            },
-          },
-        }));
-
-        // Update map center
-        setPickupMapCenter({ lat, lng });
-      } else {
-        console.error("No geometry available for pickup location.");
-      }
-    }
-  };
-
-  const onDropoffPlaceChanged = () => {
-    if (dropoffAutocomplete) {
-      const place = dropoffAutocomplete.getPlace();
-      // console.log(place, "place");
-      if (place.geometry && place.geometry.location) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-
-        // Update formData with plain lat and lng values
-        setFormData((prev) => ({
-          ...prev,
-          dropoffLocation: {
-            address: place.formatted_address,
-            geometry: {
-              location: { lat, lng }, // Use plain object for location
-            },
-          },
-        }));
-
-        // Update map center
-        setDropoffMapCenter({ lat, lng });
-      } else {
-        console.error("No geometry available for dropoff location.");
-      }
-    }
-  };
-
-  const handleMapClick = (type, e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-
-    // Initialize Geocoder
-    const geocoder = new google.maps.Geocoder();
-
-    // Reverse Geocode
-    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      if (status === "OK" && results[0]) {
-        const place = results[0]; // This is your place-like object
-        console.log("Place Object:", place);
-
-        // Extract formatted address and geometry
-        const formattedAddress = place.formatted_address;
-        const geometry = {
-          location: place.geometry.location.toJSON(), // Convert to lat/lng JSON object
-        };
-
-        console.log("Formatted Address:", formattedAddress);
-        console.log("Geometry:", geometry);
-
-        // Update formData dynamically based on type
-        setFormData((prev) => ({
-          ...prev,
-          [type]: {
-            address: formattedAddress,
-            geometry: geometry,
-          },
-        }));
-
-        // Optionally update the map center
-        if (type === "pickupLocation") {
-          setPickupMapCenter({ lat, lng });
-        } else if (type === "dropoffLocation") {
-          setDropoffMapCenter({ lat, lng });
-        }
-      } else {
-        console.error("Geocoder failed due to:", status);
-      }
-    });
   };
 
   const calculateCost = () => {
@@ -259,107 +151,22 @@ const Bookings = () => {
       <div className="px-4 py-6 bg-white shadow-md rounded-lg flex items-center flex-col border-gray-100 border-[1px]">
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 w-[300px] sm:w-[700px] border border-orange-500 p-5 rounded-md shadow-md"
+          className="space-y-6 w-[350px] sm:w-[700px] border border-orange-500 p-5 rounded-md shadow-md"
         >
           {/* Location Section */}
           <div className="flex flex-col space-y-4">
             <h2 className="text-xl font-semibold">Location</h2>
-            <div className="flex items-start justify-between gap-2 w-full md:flex-row md:items-center">
-              <LoadScript
-                googleMapsApiKey={API_KEY}
-                libraries={["places", "geometry"]}
-              >
-                <div className="flex flex-col w-full">
-                  <Autocomplete
-                    onLoad={onPickupLoad}
-                    onPlaceChanged={onPickupPlaceChanged}
-                    className="w-full"
-                  >
-                    <input
-                      name="pickupLocation"
-                      type="text"
-                      placeholder="Enter Pickup Location"
-                      value={formData.pickupLocation.address}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          pickupLocation: {
-                            ...prev.pickupLocation,
-                            address: e.target.value,
-                          },
-                        }))
-                      }
-                      className="p-2 border border-gray-300 rounded-md w-full"
-                      required
-                    />
-                  </Autocomplete>
-                  <GoogleMap
-                    mapContainerStyle={{ width: "100%", height: "400px" }}
-                    center={
-                      pickupMapCenter || { lat: 31.963158, lng: 35.930359 }
-                    }
-                    zoom={10}
-                    onClick={(e) => handleMapClick("pickupLocation", e)}
-                  >
-                    {formData.pickupLocation.geometry && (
-                      <Marker
-                        position={{
-                          lat: formData.pickupLocation.geometry.location?.lat,
-                          lng: formData.pickupLocation.geometry.location?.lng,
-                        }}
-                      />
-                    )}
-                  </GoogleMap>
-                </div>
-              </LoadScript>
-
-              <LoadScript
-                googleMapsApiKey={API_KEY}
-                libraries={["places", "geometry"]}
-              >
-                <div className="flex flex-col w-full">
-                  <Autocomplete
-                    onLoad={onDropoffLoad}
-                    onPlaceChanged={onDropoffPlaceChanged}
-                    className="w-full md:ml-2 mt-3 md:mt-0"
-                  >
-                    <input
-                      name="dropoffLocation"
-                      type="text"
-                      placeholder="Enter Drop Off Location"
-                      value={formData.dropoffLocation.address}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          dropoffLocation: {
-                            ...prev.dropoffLocation,
-                            address: e.target.value,
-                          },
-                        }))
-                      }
-                      className="p-2 border border-gray-300 rounded-md w-full"
-                      required
-                    />
-                  </Autocomplete>
-                  <GoogleMap
-                    mapContainerStyle={{ width: "100%", height: "400px" }}
-                    center={
-                      dropoffMapCenter || { lat: 31.963158, lng: 35.930359 }
-                    }
-                    zoom={10}
-                    onClick={(e) => handleMapClick("dropoffLocation", e)}
-                  >
-                    {formData.dropoffLocation.geometry && (
-                      <Marker
-                        position={{
-                          lat: formData.dropoffLocation.geometry.location.lat,
-                          lng: formData.dropoffLocation.geometry.location.lng,
-                        }}
-                      />
-                    )}
-                  </GoogleMap>
-                </div>
-              </LoadScript>
+            <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
+              <PickUpLocation
+                formData={formData}
+                setFormData={setFormData}
+                geocoder={geocoder}
+              />
+              <DropOffLocation
+                formData={formData}
+                setFormData={setFormData}
+                gecoder={geocoder}
+              />
             </div>
           </div>
 
