@@ -78,7 +78,7 @@ const PickUpLocation = ({ formData, setFormData }) => {
             name="pickupLocation"
             type="text"
             placeholder="Enter Pickup Location"
-            value={formData.pickupLocation.address}
+            value={formData?.pickupLocation?.address || ""}
             onClick={() => setIsMapDialogOpen(true)} // Open map dialog
             readOnly
             className="p-2 border border-gray-300 rounded-md w-full"
@@ -95,11 +95,11 @@ const PickUpLocation = ({ formData, setFormData }) => {
                 zoom={10}
                 onClick={(e) => handleMapClick(e)}
               >
-                {formData.pickupLocation.geometry && (
+                {formData.pickupLocation?.geometry && (
                   <Marker
                     position={{
-                      lat: formData.pickupLocation.geometry.location?.lat,
-                      lng: formData.pickupLocation.geometry.location?.lng,
+                      lat: formData.pickupLocation?.geometry.location?.lat,
+                      lng: formData.pickupLocation?.geometry.location?.lng,
                     }}
                   />
                 )}

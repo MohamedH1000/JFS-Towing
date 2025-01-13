@@ -9,9 +9,14 @@ import {
 } from "@react-google-maps/api";
 import { loadStripe } from "@stripe/stripe-js";
 import { Loader } from "lucide-react";
-import PickUpLocation from "./components/PickUpLocation";
-import DropOffLocation from "./components/DropOffLocation";
+import dynamic from "next/dynamic";
 
+const PickUpLocation = dynamic(() => import("./components/PickUpLocation"), {
+  ssr: false,
+});
+const DropOffLocation = dynamic(() => import("./components/DropOffLocation"), {
+  ssr: false,
+});
 const Bookings = () => {
   const [yearOptions, setYearOptions] = useState([]);
   const [totalCost, setTotalCost] = useState(0);

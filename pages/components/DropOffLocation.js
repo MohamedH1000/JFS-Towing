@@ -78,7 +78,7 @@ const DropOffLocation = ({ formData, setFormData, geocoder }) => {
             name="dropoffLocation"
             type="text"
             placeholder="Enter Drop Off Location"
-            value={formData.dropoffLocation.address}
+            value={formData?.dropoffLocation?.address || ""}
             onClick={() => setIsMapDialogOpen(true)} // Open map dialog
             readOnly
             className="p-2 border border-gray-300 rounded-md w-full"
@@ -98,8 +98,8 @@ const DropOffLocation = ({ formData, setFormData, geocoder }) => {
                 {formData.dropoffLocation?.geometry && (
                   <Marker
                     position={{
-                      lat: formData.dropoffLocation.geometry.location?.lat,
-                      lng: formData.dropoffLocation.geometry.location?.lng,
+                      lat: formData.dropoffLocation?.geometry?.location?.lat,
+                      lng: formData.dropoffLocation?.geometry?.location?.lng,
                     }}
                   />
                 )}
