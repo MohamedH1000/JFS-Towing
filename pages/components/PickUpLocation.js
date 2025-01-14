@@ -3,6 +3,7 @@ import {
   GoogleMap,
   LoadScript,
   Marker,
+  Rectangle,
 } from "@react-google-maps/api";
 import React, { useState } from "react";
 import "tailwindcss/tailwind.css";
@@ -77,6 +78,13 @@ const PickUpLocation = ({ formData, setFormData }) => {
     });
   };
 
+  const handleDialogClose = (e) => {
+    // Close dialog if clicked outside of the map area
+    if (e.target === e.currentTarget) {
+      setIsMapDialogOpen(false);
+    }
+  };
+
   return (
     <LoadScript googleMapsApiKey={API_KEY} libraries={["places", "geometry"]}>
       <div className="flex flex-col w-full">
@@ -106,10 +114,11 @@ const PickUpLocation = ({ formData, setFormData }) => {
           />
         </Autocomplete>
         {isMapDialogOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 ">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+            onClick={handleDialogClose} // Close on outside click
+          >
             <div className="relative w-full h-1/2 mx-5 rounded-lg">
-              {" "}
-              {/* Half screen height */}
               <GoogleMap
                 mapContainerStyle={{
                   width: "100%",
@@ -119,15 +128,63 @@ const PickUpLocation = ({ formData, setFormData }) => {
                 center={pickupMapCenter}
                 zoom={10}
                 options={{
-                  restriction: {
-                    latLngBounds: dallasBounds,
-                    strictBounds: true,
-                  },
                   streetViewControl: false,
                   mapTypeControl: false,
                 }}
                 onClick={(e) => handleMapClick(e)}
               >
+                <Rectangle
+                  bounds={{
+                    north: 85, // Top of the map
+                    south: dallasBounds.north,
+                    east: 180, // Right of the map
+                    west: -180, // Left of the map
+                  }}
+                  options={{
+                    strokeColor: "transparent",
+                    fillColor: "rgba(0, 0, 0, 0.5)",
+                    fillOpacity: 0.5,
+                  }}
+                />
+                <Rectangle
+                  bounds={{
+                    north: dallasBounds.south,
+                    south: -85, // Bottom of the map
+                    east: 180,
+                    west: -180,
+                  }}
+                  options={{
+                    strokeColor: "transparent",
+                    fillColor: "rgba(0, 0, 0, 0.5)",
+                    fillOpacity: 0.5,
+                  }}
+                />
+                <Rectangle
+                  bounds={{
+                    north: dallasBounds.north,
+                    south: dallasBounds.south,
+                    east: 180,
+                    west: dallasBounds.east,
+                  }}
+                  options={{
+                    strokeColor: "transparent",
+                    fillColor: "rgba(0, 0, 0, 0.5)",
+                    fillOpacity: 0.5,
+                  }}
+                />
+                <Rectangle
+                  bounds={{
+                    north: dallasBounds.north,
+                    south: dallasBounds.south,
+                    east: dallasBounds.west,
+                    west: -180,
+                  }}
+                  options={{
+                    strokeColor: "transparent",
+                    fillColor: "rgba(0, 0, 0, 0.5)",
+                    fillOpacity: 0.5,
+                  }}
+                />
                 {formData.pickupLocation?.geometry && (
                   <Marker
                     position={{
