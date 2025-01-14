@@ -9,7 +9,10 @@ const API_KEY = "AIzaSyB-mfaKrkjifwxSeoVqd32HYBy_Ds2q_dk"; // ضع مفتاح AP
 
 const DropOffLocation = ({ formData, setFormData, geocoder }) => {
   const [dropoffAutocomplete, setDropoffAutocomplete] = useState(null);
-  const [dropoffMapCenter, setDropoffMapCenter] = useState(null);
+  const [dropoffMapCenter, setDropoffMapCenter] = useState({
+    lat: 32.7767,
+    lng: -96.797, // Default to Dallas, TX
+  });
   const [isMapDialogOpen, setIsMapDialogOpen] = useState(false);
   const onDropoffLoad = (autocompleteInstance) => {
     // console.log(autocompleteInstance, "autocompleteInstance");

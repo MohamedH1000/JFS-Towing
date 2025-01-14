@@ -29,6 +29,11 @@ const PickUpLocation = ({ formData, setFormData }) => {
     west: -97.019, // Approximate western longitude of Dallas
   };
 
+  // const dallasCenter = {
+  //   lat: 32.7767, // Center of Dallas
+  //   lng: -96.797, // Center of Dallas
+  // };
+
   const onPickupPlaceChanged = () => {
     if (pickupAutocomplete) {
       const place = pickupAutocomplete.getPlace();
