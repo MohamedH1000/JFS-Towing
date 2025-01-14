@@ -11,11 +11,21 @@ const API_KEY = "AIzaSyB-mfaKrkjifwxSeoVqd32HYBy_Ds2q_dk"; // Replace with your 
 
 const PickUpLocation = ({ formData, setFormData }) => {
   const [pickupAutocomplete, setPickupAutocomplete] = useState(null);
-  const [pickupMapCenter, setPickupMapCenter] = useState(null);
+  const [pickupMapCenter, setPickupMapCenter] = useState({
+    lat: 32.7767,
+    lng: -96.797, // Default to Dallas, TX
+  });
   const [isMapDialogOpen, setIsMapDialogOpen] = useState(false);
 
   const onPickupLoad = (autocompleteInstance) => {
     setPickupAutocomplete(autocompleteInstance);
+  };
+
+  const dallasBounds = {
+    north: 33.0235, // Approximate northern latitude of Dallas
+    south: 32.62, // Approximate southern latitude of Dallas
+    east: -96.563, // Approximate eastern longitude of Dallas
+    west: -97.019, // Approximate western longitude of Dallas
   };
 
   const onPickupPlaceChanged = () => {
@@ -73,6 +83,16 @@ const PickUpLocation = ({ formData, setFormData }) => {
         <Autocomplete
           onLoad={onPickupLoad}
           onPlaceChanged={onPickupPlaceChanged}
+          options={{
+            componentRestrictions: { country: "us" },
+            bounds: {
+              north: 33.0235, // Approximate northern latitude of Dallas
+              south: 32.62, // Approximate southern latitude of Dallas
+              east: -96.563, // Approximate eastern longitude of Dallas
+              west: -97.019, // Approximate western longitude of Dallas
+            },
+            strictBounds: true,
+          }}
         >
           <input
             name="pickupLocation"
@@ -85,14 +105,27 @@ const PickUpLocation = ({ formData, setFormData }) => {
             required
           />
         </Autocomplete>
-
         {isMapDialogOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-            <div className="relative w-full h-full">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 ">
+            <div className="relative w-full h-1/2 mx-5 rounded-lg">
+              {" "}
+              {/* Half screen height */}
               <GoogleMap
-                mapContainerStyle={{ width: "100%", height: "100%" }}
-                center={pickupMapCenter || { lat: 31.963158, lng: 35.930359 }}
+                mapContainerStyle={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "10px",
+                }}
+                center={pickupMapCenter}
                 zoom={10}
+                options={{
+                  restriction: {
+                    latLngBounds: dallasBounds,
+                    strictBounds: true,
+                  },
+                  streetViewControl: false,
+                  mapTypeControl: false,
+                }}
                 onClick={(e) => handleMapClick(e)}
               >
                 {formData.pickupLocation?.geometry && (
@@ -104,12 +137,11 @@ const PickUpLocation = ({ formData, setFormData }) => {
                   />
                 )}
               </GoogleMap>
-
               <button
                 onClick={() => setIsMapDialogOpen(false)}
-                className="absolute top-4 right-20 bg-white text-black p-2 rounded-full shadow-md hover:bg-gray-200 bg-orange-500 text-[white]"
+                className="absolute top-2 right-20 bg-orange-500 text-[white] p-2 rounded-full shadow-md hover:bg-orange-600"
               >
-                Close
+                Done
               </button>
             </div>
           </div>

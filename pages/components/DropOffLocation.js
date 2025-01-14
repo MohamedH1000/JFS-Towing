@@ -88,9 +88,13 @@ const DropOffLocation = ({ formData, setFormData, geocoder }) => {
 
         {isMapDialogOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-            <div className="relative w-full h-full">
+            <div className="relative w-full h-1/2 mx-5">
               <GoogleMap
-                mapContainerStyle={{ width: "100%", height: "100%" }}
+                mapContainerStyle={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "10px",
+                }}
                 center={dropoffMapCenter || { lat: 31.963158, lng: 35.930359 }}
                 zoom={10}
                 onClick={(e) => handleMapClick(e)}
@@ -107,9 +111,9 @@ const DropOffLocation = ({ formData, setFormData, geocoder }) => {
 
               <button
                 onClick={() => setIsMapDialogOpen(false)}
-                className="absolute top-4 right-20 bg-white text-black p-2 rounded-full shadow-md hover:bg-gray-200 bg-orange-500 text-[white]"
+                className="absolute top-2 right-20 bg-white text-black p-2 rounded-full shadow-md hover:bg-gray-200 bg-orange-500 text-[white]"
               >
-                Close
+                Done
               </button>
             </div>
           </div>
