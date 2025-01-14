@@ -1,12 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
-import {
-  LoadScript,
-  Autocomplete,
-  GoogleMap,
-  Marker,
-} from "@react-google-maps/api";
 import { loadStripe } from "@stripe/stripe-js";
 import { Loader } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -22,7 +16,6 @@ const Bookings = () => {
   const [totalCost, setTotalCost] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [map, setMap] = useState(null); // To store map instance
   const [geocoder, setGeocoder] = useState(null); //
 
   const [formData, setFormData] = useState({

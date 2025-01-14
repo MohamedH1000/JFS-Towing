@@ -1,6 +1,6 @@
-/* purgecss start ignore */
 @tailwind base;
 @tailwind components;
+@tailwind utilities;
 
 html {
   font-family: "Rubik", sans-serif;
@@ -60,8 +60,3 @@ li.check:before {
 .slick-dots .slick-active span {
   @apply bg-orange-500 rounded-l-full rounded-r-full w-12;
 }
-
-/* purgecss end ignore */
-@tailwind utilities;
-/* purgecss start ignore */
-/* purgecss end ignore */

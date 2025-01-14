@@ -2,10 +2,8 @@ const purgecss = [
   "@fullhuman/postcss-purgecss",
   {
     content: [
-      "./pages/*.js",
-      "./pages/**/*.js",
-      "./components/*.js",
-      "./components/**/*.js",
+      "./pages/**/*.{js,ts,jsx,tsx}",
+      "./components/**/*.{js,ts,jsx,tsx}",
     ],
     whitelistPatterns: [
       /^slick-/,
@@ -23,9 +21,8 @@ const purgecss = [
 ];
 module.exports = {
   plugins: [
-    "postcss-import",
-    "tailwindcss",
-    "autoprefixer",
-    ...(process.env.NODE_ENV === "production" ? [purgecss] : []),
+    "postcss-import", // Enables importing other CSS files
+    "tailwindcss", // Adds Tailwind CSS processing
+    "autoprefixer", // Adds vendor prefixes
   ],
 };
