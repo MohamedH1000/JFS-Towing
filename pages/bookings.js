@@ -360,7 +360,7 @@ const Bookings = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="p-2 border border-gray-300 rounded-md"
+              className="p-2 border border-gray-300 rounded-md w-full"
             />
             <select
               id="countryCode"
@@ -368,7 +368,7 @@ const Bookings = () => {
               value={formData.countryCode}
               onChange={handleChange}
               required
-              className="p-2 border border-gray-300 rounded-md ml-2"
+              className="p-2 border border-gray-300 rounded-md w-full"
             >
               <option value="+1">+1 (USA)</option>
               <option value="+44">+44 (UK)</option>
@@ -387,7 +387,7 @@ const Bookings = () => {
               value={formData.phone}
               onChange={handleChange}
               required
-              className="p-2 border border-gray-300 rounded-md "
+              className="p-2 border border-gray-300 rounded-md w-full"
             />
           </div>
 
