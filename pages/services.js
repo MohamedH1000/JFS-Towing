@@ -4,7 +4,12 @@ import Layout from "../components/Layout/Layout";
 const services = () => {
   return (
     <>
-      <Layout>Services</Layout>
+      <Layout>
+        <div className="w-full h-[100px] mt-[90px] bg-orange-500 flex items-center justify-center">
+          <h2 className="text-3xl font-bold text-[white]">Services</h2>
+          <section></section>
+        </div>
+      </Layout>
     </>
   );
 };

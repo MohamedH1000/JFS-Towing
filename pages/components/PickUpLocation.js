@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import "tailwindcss/tailwind.css";
 
-const API_KEY = "AIzaSyB-mfaKrkjifwxSeoVqd32HYBy_Ds2q_dk"; // Replace with your API key
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 const PickUpLocation = ({ formData, setFormData }) => {
   const [pickupAutocomplete, setPickupAutocomplete] = useState(null);

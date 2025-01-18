@@ -4,6 +4,7 @@ import Layout from "../components/Layout/Layout";
 import { loadStripe } from "@stripe/stripe-js";
 import { Loader } from "lucide-react";
 import dynamic from "next/dynamic";
+import { services } from "../constants/constants";
 
 const PickUpLocation = dynamic(() => import("./components/PickUpLocation"), {
   ssr: false,
@@ -15,8 +16,7 @@ const Bookings = () => {
   const [yearOptions, setYearOptions] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [geocoder, setGeocoder] = useState(null); //
+  const [selectedService, setSelectedService] = useState("Flatbed Towing");
 
   const [formData, setFormData] = useState({
     pickupLocation: { address: "", geometry: null },
@@ -33,6 +33,7 @@ const Bookings = () => {
     name: "",
     countryCode: "+1",
     phone: "",
+    selectedService: "",
   });
   // console.log(formData);
   const stripePromise = loadStripe(
@@ -48,10 +49,15 @@ const Bookings = () => {
     setYearOptions(years);
 
     // Initialize geocoder when the component mounts
-    if (window.google) {
-      setGeocoder(new google.maps.Geocoder());
-    }
   }, []);
+
+  const handleServiceSelection = (service) => {
+    setSelectedService(service);
+    setFormData((prev) => ({
+      ...prev,
+      selectedService: service,
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,19 +68,30 @@ const Bookings = () => {
   };
 
   const calculateCost = () => {
-    let cost = 100; // Base cost
+    let cost = 100;
+    if (
+      selectedService !== "Flatbed Towing" &&
+      selectedService !== "Wheel-Lift Towing"
+    ) {
+      cost = 75;
+      cost +=
+        parseFloat(formData.brokenAxle) + parseFloat(formData.parkingGarage);
+      setTotalCost(cost);
+      return;
+    }
     if (formData.pickupLocation.geometry && formData.dropoffLocation.geometry) {
       const distance = google.maps.geometry.spherical.computeDistanceBetween(
         formData.pickupLocation.geometry.location,
         formData.dropoffLocation.geometry.location
       );
+      cost = 100; // Base cost
       const distanceInKm = distance / 1000; // Convert to km
       const additionalCost = distanceInKm * 0.5; // Cost per km
       cost += additionalCost;
       cost +=
         parseFloat(formData.brokenAxle) + parseFloat(formData.parkingGarage);
-      setTotalCost(cost);
     }
+    setTotalCost(cost);
   };
 
   const handleSubmit = async (e) => {
@@ -139,6 +156,7 @@ const Bookings = () => {
     formData.dropoffLocation,
     formData.brokenAxle,
     formData.parkingGarage,
+    selectedService,
   ]);
 
   return (
@@ -153,18 +171,60 @@ const Bookings = () => {
         >
           {/* Location Section */}
           <div className="flex flex-col space-y-4">
+            {/* <h2 className="text-xl font-semibold">Type of Vehicle</h2>
+            <select
+              name="year"
+              value={formData.year}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              required
+            >
+              <option value="">Select Type</option>
+              {yearOptions.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select> */}
+            <h2 className="text-xl font-semibold">
+              How can we help you today ?
+            </h2>
+            <div className="flex items-center justify-start flex-wrap gap-5">
+              {services.map((service) => (
+                <div className="flex flex-col items-center" key={service.name}>
+                  <div
+                    onClick={() => handleServiceSelection(service.name)}
+                    className={`bg-[white] border-[2px] ${
+                      selectedService === service.name
+                        ? "bg-[#142247] text-[white]"
+                        : "border-[#f53855]"
+                    } cursor-pointer rounded-full w-[100px] h-[100px] flex flex-col 
+                  items-center justify-center gap-3 text-[black] font-bold`}
+                  >
+                    {service.icon}
+                  </div>
+                  <p className="mt-3">{service.name}</p>
+                </div>
+              ))}
+            </div>
             <h2 className="text-xl font-semibold">Location</h2>
             <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
-              <PickUpLocation
-                formData={formData}
-                setFormData={setFormData}
-                geocoder={geocoder}
-              />
-              <DropOffLocation
-                formData={formData}
-                setFormData={setFormData}
-                gecoder={geocoder}
-              />
+              <PickUpLocation formData={formData} setFormData={setFormData} />
+              <div
+                style={{
+                  display:
+                    selectedService === "Flatbed Towing" ||
+                    selectedService === "Wheel-Lift Towing"
+                      ? "block"
+                      : "none",
+                }}
+                className="w-full"
+              >
+                <DropOffLocation
+                  formData={formData}
+                  setFormData={setFormData}
+                />
+              </div>
             </div>
           </div>
 
@@ -347,7 +407,7 @@ const Bookings = () => {
             </div>
           </div>
           <h1 className="font-bold text-3xl">
-            Total Cost: {totalCost.toFixed(2)} $
+            Total Cost: {totalCost?.toFixed(2)} $
           </h1>
           <hr className="text-gray-500" />
           <h2 className="text-3xl font-bold">Contact Information</h2>
