@@ -312,6 +312,7 @@ const Bookings = () => {
                   value={formData.serviceDate}
                   onChange={handleChange}
                   className="p-2 border border-gray-300 rounded-md"
+                  min={new Date().toISOString().split("T")[0]} // Disable past dates
                   required
                 />
                 <input
@@ -320,6 +321,15 @@ const Bookings = () => {
                   value={formData.serviceTime}
                   onChange={handleChange}
                   className="p-2 border border-gray-300 rounded-md"
+                  min={
+                    formData.serviceDate ===
+                    new Date().toISOString().split("T")[0]
+                      ? new Date().toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : null
+                  } // Disable past times only for the current date
                   required
                 />
               </div>
