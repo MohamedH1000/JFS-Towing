@@ -19,6 +19,8 @@ export default async function handler(req, res) {
       brokenAxle,
       parkingGarage,
       pictures,
+      selectedService,
+      vehicleType,
     } = req.body;
 
     try {
@@ -56,6 +58,8 @@ export default async function handler(req, res) {
           pictures: JSON.stringify(pictures),
           name: name,
           phone: phone,
+          selectedService,
+          vehicleType,
         },
       });
 

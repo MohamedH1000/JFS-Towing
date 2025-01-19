@@ -87,6 +87,8 @@ export default async function handler(req, res) {
           model,
           brokenAxle,
           parkingGarage,
+          vehicleType,
+          selectedService,
         } = session.metadata;
         const customerEmail = session.customer_details?.email;
         const customerName = session.customer_details?.name;
@@ -111,12 +113,14 @@ export default async function handler(req, res) {
         <p><strong>Parking Garage:</strong> ${parkingGarage}</p>
         <p><strong>Amount Paid:</strong> $${amount}</p>
         <p><strong>Description:</strong> ${description}</p>
+        <p><strong>Description:</strong> ${selectedService}</p>
+        <p><strong>Description:</strong> ${vehicleType}</p>
       `;
         // Send an email to the customer
         await sendMail({
           email: SMTP_SERVER_USERNAME,
           sendTo: customerEmail,
-          subject: "Payment Confirmation",
+          subject: "Service Booked Successfully",
           text: `New service request from ${name}. Amount Paid: $${amount}.`,
           html: emailContent,
         });

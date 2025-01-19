@@ -128,7 +128,7 @@ const DropOffLocation = ({ formData, setFormData }) => {
               </GoogleMap>
               <button
                 onClick={() => setIsMapDialogOpen(false)}
-                className="absolute top-2 right-20 bg-orange-500 text-white p-2 rounded-full shadow-md hover:bg-gray-200"
+                className="absolute top-2 right-20 bg-orange-500 text-[white] p-2 rounded-full shadow-md hover:bg-gray-200"
               >
                 Done
               </button>

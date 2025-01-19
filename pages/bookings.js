@@ -5,6 +5,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Loader } from "lucide-react";
 import dynamic from "next/dynamic";
 import { services } from "../constants/constants";
+import { vehicleType } from "../constants/constants";
 
 const PickUpLocation = dynamic(() => import("./components/PickUpLocation"), {
   ssr: false,
@@ -17,6 +18,10 @@ const Bookings = () => {
   const [totalCost, setTotalCost] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedService, setSelectedService] = useState("Flatbed Towing");
+  const [availableServices, setAvailableServices] = useState([]);
+  const [selectedVehicleType, setSelectedVehicleType] = useState(
+    vehicleType[0]
+  );
 
   const [formData, setFormData] = useState({
     pickupLocation: { address: "", geometry: null },
@@ -34,8 +39,9 @@ const Bookings = () => {
     countryCode: "+1",
     phone: "",
     selectedService: "",
+    vehicleType: "",
   });
-  // console.log(formData);
+  console.log(formData);
   const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   );
@@ -47,9 +53,31 @@ const Bookings = () => {
       years.push(year);
     }
     setYearOptions(years);
-
+    setAvailableServices(
+      services.filter((service) =>
+        selectedVehicleType.supportedServices.includes(service.value)
+      )
+    );
     // Initialize geocoder when the component mounts
   }, []);
+
+  const handleVehicleTypeChange = (event) => {
+    const selectedValue = parseInt(event.target.value, 10);
+    const selectedType = vehicleType.find(
+      (type) => type.value === selectedValue
+    );
+    setSelectedVehicleType(selectedType);
+    setAvailableServices(
+      services.filter((service) =>
+        selectedType?.supportedServices.includes(service.value)
+      )
+    );
+    setFormData((prev) => ({
+      ...prev,
+      vehicleType: selectedType?.name || "",
+      selectedService: "", // Reset service when vehicle type changes
+    }));
+  };
 
   const handleServiceSelection = (service) => {
     setSelectedService(service);
@@ -71,7 +99,8 @@ const Bookings = () => {
     let cost = 100;
     if (
       selectedService !== "Flatbed Towing" &&
-      selectedService !== "Wheel-Lift Towing"
+      selectedService !== "Wheel-Lift Towing" &&
+      selectedService !== "Motorcycle Towing"
     ) {
       cost = 75;
       cost +=
@@ -171,26 +200,25 @@ const Bookings = () => {
         >
           {/* Location Section */}
           <div className="flex flex-col space-y-4">
-            {/* <h2 className="text-xl font-semibold">Type of Vehicle</h2>
+            <h2 className="text-xl font-semibold">Type of Vehicle</h2>
             <select
-              name="year"
-              value={formData.year}
-              onChange={handleChange}
+              name="vehicleType"
+              value={selectedVehicleType.value}
+              onChange={handleVehicleTypeChange}
               className="w-full p-2 border border-gray-300 rounded-md"
               required
             >
-              <option value="">Select Type</option>
-              {yearOptions.map((year) => (
-                <option key={year} value={year}>
-                  {year}
+              {vehicleType.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.name}
                 </option>
               ))}
-            </select> */}
+            </select>
             <h2 className="text-xl font-semibold">
               How can we help you today ?
             </h2>
             <div className="flex items-center justify-start flex-wrap gap-5">
-              {services.map((service) => (
+              {availableServices.map((service) => (
                 <div className="flex flex-col items-center" key={service.name}>
                   <div
                     onClick={() => handleServiceSelection(service.name)}
@@ -214,7 +242,8 @@ const Bookings = () => {
                 style={{
                   display:
                     selectedService === "Flatbed Towing" ||
-                    selectedService === "Wheel-Lift Towing"
+                    selectedService === "Wheel-Lift Towing" ||
+                    selectedService === "Motorcycle Towing"
                       ? "block"
                       : "none",
                 }}
