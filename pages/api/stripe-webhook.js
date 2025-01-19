@@ -138,8 +138,16 @@ export default async function handler(req, res) {
             : ""
         } 
         <p><strong>Date and Time Option:</strong> ${dateTimeOption}</p>
-        <p><strong>Service Date:</strong> ${serviceDate}</p>
-        <p><strong>Service Time:</strong> ${serviceTime}</p>
+        ${
+          serviceDate
+            ? `<p><strong>Service Date:</strong> ${serviceDate}</p>`
+            : ""
+        }
+        ${
+          serviceTime
+            ? `<p><strong>Service Time:</strong> ${serviceTime}</p>`
+            : ""
+        }
         <p><strong>Year:</strong> ${year}</p>
         <p><strong>Make:</strong> ${make}</p>
         <p><strong>Model:</strong> ${model}</p>
@@ -147,8 +155,8 @@ export default async function handler(req, res) {
         <p><strong>Parking Garage:</strong> ${parkingGarage}</p>
         <p><strong>Amount Paid:</strong> $${amount}</p>
         <p><strong>Description:</strong> ${description}</p>
-        <p><strong>Description:</strong> ${selectedService}</p>
-        <p><strong>Description:</strong> ${vehicleType}</p>
+        <p><strong>The Selected Service:</strong> ${selectedService}</p>
+        <p><strong>The Vehicle Type:</strong> ${vehicleType}</p>
       `;
         // Send an email to the customer
         await sendMail({
