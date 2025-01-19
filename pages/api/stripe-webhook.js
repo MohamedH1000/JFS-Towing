@@ -90,6 +90,7 @@ export default async function handler(req, res) {
           parkingGarage,
           vehicleType,
           selectedService,
+          vehicleOther,
         } = session.metadata;
         const customerEmail = session.customer_details?.email;
         const customerName = session.customer_details?.name;
@@ -157,6 +158,11 @@ export default async function handler(req, res) {
         <p><strong>Description:</strong> ${description}</p>
         <p><strong>The Selected Service:</strong> ${selectedService}</p>
         <p><strong>The Vehicle Type:</strong> ${vehicleType}</p>
+        ${
+          vehicleOther
+            ? `<p><strong>The Vehicle Name:</strong> ${vehicleOther}</p>`
+            : ""
+        }
       `;
         // Send an email to the customer
         await sendMail({

@@ -21,6 +21,7 @@ export default async function handler(req, res) {
       pictures,
       selectedService,
       vehicleType,
+      vehicleOther,
     } = req.body;
 
     try {
@@ -60,6 +61,7 @@ export default async function handler(req, res) {
           phone: phone,
           selectedService: selectedService,
           vehicleType: vehicleType,
+          vehicleOther: vehicleOther,
         },
       });
 

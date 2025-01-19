@@ -17,7 +17,7 @@ const Bookings = () => {
   const [yearOptions, setYearOptions] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedService, setSelectedService] = useState("Flatbed Towing");
+
   const [availableServices, setAvailableServices] = useState([]);
   const [selectedVehicleType, setSelectedVehicleType] = useState(
     vehicleType[0]
@@ -38,10 +38,14 @@ const Bookings = () => {
     name: "",
     countryCode: "+1",
     phone: "",
-    selectedService: "",
-    vehicleType: "",
+    selectedService: "Flatbed Towing",
+    vehicleType: "Car/SUV/Minivan",
+    vehicleOther: "",
   });
   console.log(formData);
+  const [selectedService, setSelectedService] = useState(
+    formData.selectedService
+  );
   const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   );
@@ -75,7 +79,7 @@ const Bookings = () => {
     setFormData((prev) => ({
       ...prev,
       vehicleType: selectedType?.name || "",
-      selectedService: "", // Reset service when vehicle type changes
+      selectedService: formData.selectedService, // Reset service when vehicle type changes
     }));
   };
 
@@ -151,6 +155,7 @@ const Bookings = () => {
           pictures: formData.pictures,
           selectedService: formData.selectedService,
           vehicleType: formData.vehicleType,
+          vehicleOther: formData.vehicleOther,
         }),
       });
 
@@ -216,6 +221,20 @@ const Bookings = () => {
                 </option>
               ))}
             </select>
+            {selectedVehicleType.value === 7 && (
+              <input
+                name="vehicleOther"
+                className="w-full py-2 px-4 rounded-lg outline-[1px] border-[2px] border-orange-500"
+                value={formData.vehicleOther}
+                placeholder="Enter Vehicle Type"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    vehicleOther: e.target.value,
+                  })
+                }
+              />
+            )}
             <h2 className="text-xl font-semibold">
               How can we help you today ?
             </h2>
