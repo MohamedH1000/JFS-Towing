@@ -149,6 +149,8 @@ const Bookings = () => {
           brokenAxle: formData.brokenAxle,
           parkingGarage: formData.parkingGarage,
           pictures: formData.pictures,
+          selectedService: formData.selectedService,
+          vehicleType: formData.vehicleType,
         }),
       });
 

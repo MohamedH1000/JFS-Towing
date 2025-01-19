@@ -121,7 +121,7 @@ export default async function handler(req, res) {
           pickupLocation?.geometry
             ? ` 
             <p>
-              <strong>Dropoff Location:</strong> 
+              <strong>Pickup Location:</strong> 
               ${pickupLocation.geometry.location.lat}
             </p>
             `
