@@ -58,8 +58,8 @@ export default async function handler(req, res) {
           pictures: JSON.stringify(pictures),
           name: name,
           phone: phone,
-          selectedService,
-          vehicleType,
+          selectedService: selectedService,
+          vehicleType: vehicleType,
         },
       });
 

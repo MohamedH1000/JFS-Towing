@@ -101,42 +101,41 @@ export default async function handler(req, res) {
         <p><strong>Email:</strong> ${customerEmail}</p>
         <p><strong>Phone:</strong> ${phone}</p>
         ${
-          pickupLocation?.address ? (
-            <p>
-              <strong>Pickup Location:</strong> ${pickupLocation.address}
-            </p>
-          ) : (
-            ""
-          )
+          pickupLocation?.address
+            ? `<p>
+           <strong>Pickup Location:</strong> ${pickupLocation.address}
+         </p>`
+            : ""
         }
         ${
-          dropoffLocation?.address ? (
+          dropoffLocation?.address
+            ? `
+            
             <p>
               <strong>Dropoff Location:</strong> ${dropoffLocation.address}
             </p>
-          ) : (
-            ""
-          )
+            `
+            : ""
         }
         ${
-          pickupLocation?.geometry ? (
+          pickupLocation?.geometry
+            ? ` 
             <p>
-              <strong>Dropoff Location:</strong> $
-              {pickupLocation.geometry.location.lat}
+              <strong>Dropoff Location:</strong> 
+              ${pickupLocation.geometry.location.lat}
             </p>
-          ) : (
-            ""
-          )
+            `
+            : ""
         }
         ${
-          dropoffLocation?.geometry ? (
+          dropoffLocation?.geometry
+            ? `
             <p>
-              <strong>Dropoff Location:</strong> $
-              {dropoffLocation.geometry.location.lng}
+              <strong>Dropoff Location:</strong>
+              ${dropoffLocation.geometry.location.lng}
             </p>
-          ) : (
-            ""
-          )
+            `
+            : ""
         } 
         <p><strong>Date and Time Option:</strong> ${dateTimeOption}</p>
         <p><strong>Service Date:</strong> ${serviceDate}</p>
