@@ -337,10 +337,10 @@ const Bookings = () => {
                 <div className="flex flex-col items-center" key={service.name}>
                   <div
                     onClick={() => handleServiceSelection(service.name)}
-                    className={`bg-[white] border-[2px] ${
+                    className={` border-[2px] ${
                       selectedService === service.name
                         ? "bg-[#142247] text-[white]"
-                        : "border-[#f53855]"
+                        : "border-[#f53855] bg-[white]"
                     } cursor-pointer rounded-full w-[100px] h-[100px] flex flex-col 
                   items-center justify-center gap-3 text-[black] font-bold`}
                   >
