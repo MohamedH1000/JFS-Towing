@@ -34,6 +34,7 @@ const Bookings = () => {
   const [otp, setOtp] = useState("");
   // console.log(otp, "otp number");
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoadingOTP, setIsLoadingOTP] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   // console.log(formData.phone, "phone number");
   // console.log(selectedVehicleType, "selected Vehicle Type");
@@ -168,20 +169,75 @@ const Bookings = () => {
 
   // دالة حساب المسافة
   const handleOtp = async (e) => {
-    setIsOpen(true);
-    // const otpResponse = await fetch("/api/send-otp", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     phone: formData.phone,
-    //     countryCode: formData.countryCode,
-    //   }),
-    // });
+    const requiredFields = [
+      "pickupLocation",
+      "dropoffLocation",
+      "dateTimeOption",
+      "year",
+      "make",
+      "model",
+      "brokenAxle",
+      "parkingGarage",
+      "pictures",
+      "name",
+      "countryCode",
+      "phone",
+      "selectedService",
+      "vehicleType",
+    ];
 
-    // if (!otpResponse.ok) {
-    //   console.error("Failed to send OTP:", await otpResponse.text());
-    //   return;
-    // }
+    // Ensure all required fields are filled
+    for (let field of requiredFields) {
+      if (
+        !formData[field] ||
+        (Array.isArray(formData[field]) && formData[field].length === 0)
+      ) {
+        alert(`${field} is required`);
+        return; // Stop further processing if a required field is empty
+      }
+
+      if (
+        !formData.pickupLocation.address ||
+        !formData.pickupLocation.geometry
+      ) {
+        alert("Pickup location address and geometry are required");
+        return;
+      }
+
+      if (
+        !formData.dropoffLocation.address ||
+        !formData.dropoffLocation.geometry
+      ) {
+        alert("Dropoff location address and geometry are required");
+        return;
+      }
+
+      // Validate pictures array
+      if (formData.pictures.length === 0) {
+        alert("Please add pictures if necessary");
+        return;
+      }
+    }
+    setIsLoadingOTP(true);
+    setIsOpen(true);
+    try {
+      // const otpResponse = await fetch("/api/send-otp", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     phone: formData.phone,
+      //     countryCode: formData.countryCode,
+      //   }),
+      // });
+      // if (!otpResponse.ok) {
+      //   console.error("Failed to send OTP:", await otpResponse.text());
+      //   return;
+      // }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoadingOTP(false);
+    }
 
     // Step 2: Prompt the user to enter the OTP
   };
@@ -607,10 +663,11 @@ const Bookings = () => {
 
           <button
             onClick={handleOtp}
+            disabled={isLoadingOTP}
             type="button"
             className="w-full py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-600 text-[white] flex justify-center"
           >
-            Send OTP
+            {isLoadingOTP ? <Loader /> : "Send OTP"}
           </button>
           {isOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
