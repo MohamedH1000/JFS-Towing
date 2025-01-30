@@ -55,13 +55,6 @@ export const BookingProvider = ({ children }) => {
   };
   const resetFormData = () => {
     setFormData(initialFormData);
-    setSelectedService(initialFormData.selectedService);
-    setSelectedVehicleType(vehicleType[0]);
-    setAvailableServices(
-      services.filter((service) =>
-        vehicleType[0].supportedServices.includes(service.value)
-      )
-    );
   };
   // const handleServiceSelection = (service) => {
   //   setFormData((prev) => ({
