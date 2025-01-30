@@ -179,7 +179,7 @@ const about = () => {
                 variants={scrollAnimation}
               >
                 <Image
-                  src="/assets/whyTowing.jpg"
+                  src="/assets/whyTowingAbout.jpg"
                   alt="offer right"
                   quality={100}
                   height={414}

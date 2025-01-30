@@ -24,11 +24,11 @@ const services = () => {
       </div>
       <section className="flex flex-col items-center justify-center gap-5 my-10">
         {serv.map((service) => (
-          <div className="border-[2px] border-orange-500 shadow-md rounded-lg cursor-pointer p-4 md:w-[500px] w-[300px]">
+          <div className="border-[2px] border-orange-500 shadow-md  cursor-pointer p-4 md:w-[500px] w-[300px]">
             <img
               src={service.img}
               alt={service.name}
-              className="w-full h-auto"
+              className="w-full h-auto rounded-lg"
             />
             <h1 className="font-bold text-lg mt-2">{service.name}</h1>
             <p className="mt-3">{service.description}</p>
