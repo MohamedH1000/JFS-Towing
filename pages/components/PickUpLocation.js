@@ -10,7 +10,7 @@ import "tailwindcss/tailwind.css";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-const PickUpLocation = ({ formData, setFormData }) => {
+const PickUpLocation = ({ formData, setFormData, pickupLocationRef }) => {
   const [pickupAutocomplete, setPickupAutocomplete] = useState(null);
   const [pickupMapCenter, setPickupMapCenter] = useState({
     lat: 32.7767,
@@ -108,6 +108,7 @@ const PickUpLocation = ({ formData, setFormData }) => {
           }}
         >
           <input
+            ref={pickupLocationRef}
             name="pickupLocation"
             type="text"
             placeholder="Enter Pickup Location"

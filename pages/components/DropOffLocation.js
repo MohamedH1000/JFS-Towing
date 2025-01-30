@@ -7,7 +7,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-const DropOffLocation = ({ formData, setFormData }) => {
+const DropOffLocation = ({ formData, setFormData, dropoffLocationRef }) => {
   const [dropoffAutocomplete, setDropoffAutocomplete] = useState(null);
   const [dropoffMapCenter, setDropoffMapCenter] = useState({
     lat: 32.7767,
@@ -95,6 +95,7 @@ const DropOffLocation = ({ formData, setFormData }) => {
           onPlaceChanged={onDropoffPlaceChanged}
         >
           <input
+            ref={dropoffLocationRef}
             type="text"
             placeholder="Enter Drop Off Location"
             value={formData?.dropoffLocation?.address || ""}

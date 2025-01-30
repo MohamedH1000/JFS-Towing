@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useEffect } from "react";
 import Layout from "../components/Layout/Layout";
 import { loadStripe } from "@stripe/stripe-js";
@@ -34,8 +34,23 @@ const Bookings = () => {
   const [otp, setOtp] = useState("");
   // console.log(otp, "otp number");
   const [isOpen, setIsOpen] = useState(false);
+  const [errors, setErrors] = useState({});
   const [isLoadingOTP, setIsLoadingOTP] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+
+  const pickupLocationRef = useRef(null);
+  const dropoffLocationRef = useRef(null);
+  const dateTimeOptionRef = useRef(null);
+  const yearRef = useRef(null);
+  const makeRef = useRef(null);
+  const modelRef = useRef(null);
+  const brokenAxleRef = useRef(null);
+  const parkingGarageRef = useRef(null);
+  const nameRef = useRef(null);
+  const countryCodeRef = useRef(null);
+  const phoneRef = useRef(null);
+  const selectedServiceRef = useRef(null);
+  const vehicleTypeRef = useRef(null);
   // console.log(formData.phone, "phone number");
   // console.log(selectedVehicleType, "selected Vehicle Type");
   const stripePromise = loadStripe(
@@ -89,6 +104,12 @@ const Bookings = () => {
       ...prev,
       [name]: value,
     }));
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
+    }
   };
 
   const calculateCost = async () => {
@@ -170,58 +191,74 @@ const Bookings = () => {
   // دالة حساب المسافة
   const handleOtp = async (e) => {
     const requiredFields = [
-      "pickupLocation",
-      "dropoffLocation",
-      "dateTimeOption",
-      "year",
-      "make",
-      "model",
-      "brokenAxle",
-      "parkingGarage",
-      "pictures",
-      "name",
-      "countryCode",
-      "phone",
-      "selectedService",
-      "vehicleType",
+      { field: "pickupLocation", ref: pickupLocationRef },
+      { field: "dropoffLocation", ref: dropoffLocationRef },
+      { field: "dateTimeOption", ref: dateTimeOptionRef },
+      { field: "year", ref: yearRef },
+      { field: "make", ref: makeRef },
+      { field: "model", ref: modelRef },
+      { field: "brokenAxle", ref: brokenAxleRef },
+      { field: "parkingGarage", ref: parkingGarageRef },
+      { field: "name", ref: nameRef },
+      { field: "countryCode", ref: countryCodeRef },
+      { field: "phone", ref: phoneRef },
+      { field: "selectedService", ref: selectedServiceRef },
+      { field: "vehicleType", ref: vehicleTypeRef },
     ];
 
-    // Ensure all required fields are filled
-    for (let field of requiredFields) {
+    let newErrors = {};
+
+    // Validate required fields
+    for (let { field, ref } of requiredFields) {
       if (
         !formData[field] ||
         (Array.isArray(formData[field]) && formData[field].length === 0)
       ) {
-        alert(`${field} is required`);
-        return; // Stop further processing if a required field is empty
-      }
+        newErrors[field] = `${field} is required`;
 
-      if (
-        !formData.pickupLocation.address ||
-        !formData.pickupLocation.geometry
-      ) {
-        alert("Pickup location address and geometry are required");
-        return;
-      }
-
-      if (
-        !formData.dropoffLocation.address ||
-        !formData.dropoffLocation.geometry
-      ) {
-        alert("Dropoff location address and geometry are required");
-        return;
-      }
-
-      // Validate pictures array
-      if (formData.pictures.length === 0) {
-        alert("Please add pictures if necessary");
-        return;
+        // Focus on the first invalid field
+        if (ref.current) {
+          ref.current.focus();
+          break; // Stop after focusing on the first invalid field
+        }
       }
     }
+
+    // Validate pickup location
+    if (!formData.pickupLocation.address || !formData.pickupLocation.geometry) {
+      newErrors.pickupLocation =
+        "Pickup location address and geometry are required";
+      if (pickupLocationRef.current) {
+        pickupLocationRef.current.focus();
+      }
+    }
+
+    // Validate dropoff location
+    if (
+      !formData.dropoffLocation.address ||
+      !formData.dropoffLocation.geometry
+    ) {
+      newErrors.dropoffLocation =
+        "Dropoff location address and geometry are required";
+      if (dropoffLocationRef.current) {
+        dropoffLocationRef.current.focus();
+      }
+    }
+
+    // If there are errors, set them and stop further processing
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Clear errors if validation passes
+    setErrors({});
+
     setIsLoadingOTP(true);
     setIsOpen(true);
     try {
-      // const otpResponse = await fetch("/api/send-otp", {
+      // Your OTP sending logic here
+      //   const otpResponse = await fetch("/api/send-otp", {
       //   method: "POST",
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify({
@@ -238,8 +275,6 @@ const Bookings = () => {
     } finally {
       setIsLoadingOTP(false);
     }
-
-    // Step 2: Prompt the user to enter the OTP
   };
   const handleResend = async () => {
     const otpResponse = await fetch("/api/send-otp", {
@@ -359,6 +394,7 @@ const Bookings = () => {
           <div className="flex flex-col space-y-4">
             <h2 className="text-xl font-semibold">Type of Vehicle</h2>
             <select
+              ref={vehicleTypeRef}
               name="vehicleType"
               value={selectedVehicleType.value}
               onChange={(e) => handleVehicleTypeChange(e)}
@@ -371,24 +407,35 @@ const Bookings = () => {
                 </option>
               ))}
             </select>
+            {errors.vehicleType && (
+              <p className="text-[red] text-sm">{errors.vehicleType}</p>
+            )}
             {selectedVehicleType.value === 7 && (
-              <input
-                name="vehicleOther"
-                className="w-full py-2 px-4 rounded-lg outline-[1px] border-[2px] border-orange-500"
-                value={formData.vehicleOther}
-                placeholder="Enter Vehicle Type"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    vehicleOther: e.target.value,
-                  })
-                }
-              />
+              <>
+                <input
+                  name="vehicleOther"
+                  className="w-full py-2 px-4 rounded-lg outline-[1px] border-[2px] border-orange-500"
+                  value={formData.vehicleOther}
+                  placeholder="Enter Vehicle Type"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      vehicleOther: e.target.value,
+                    })
+                  }
+                />
+                {errors.vehicleOther && (
+                  <p className="text-[red] text-sm">{errors.vehicleOther}</p>
+                )}
+              </>
             )}
             <h2 className="text-xl font-semibold">
               How can we help you today ?
             </h2>
-            <div className="flex items-center justify-start flex-wrap gap-5">
+            <div
+              className="flex items-center justify-start flex-wrap gap-5"
+              ref={selectedServiceRef}
+            >
               {availableServices.map((service) => (
                 <div className="flex flex-col items-center" key={service.name}>
                   <div
@@ -406,9 +453,22 @@ const Bookings = () => {
                 </div>
               ))}
             </div>
+            {errors.selectedService && (
+              <p className="text-[red] text-sm">{errors.selectedService}</p>
+            )}
             <h2 className="text-xl font-semibold">Location</h2>
             <div className="flex items-center justify-between gap-2 w-full flex-col md:flex-row">
-              <PickUpLocation formData={formData} setFormData={setFormData} />
+              <div className="w-full">
+                <p className="text-[black] mb-2">Pickup Location</p>
+                <PickUpLocation
+                  formData={formData}
+                  setFormData={setFormData}
+                  pickupLocationRef={pickupLocationRef}
+                />
+                {errors.pickupLocation && (
+                  <p className="text-[red] text-sm">{errors.pickupLocation}</p>
+                )}
+              </div>
               <div
                 style={{
                   display:
@@ -420,10 +480,15 @@ const Bookings = () => {
                 }}
                 className="w-full"
               >
+                <p className="text-[black] mb-2">Drop Off Location</p>
                 <DropOffLocation
                   formData={formData}
                   setFormData={setFormData}
+                  dropoffLocationRef={dropoffLocationRef}
                 />
+                {errors.dropoffLocation && (
+                  <p className="text-[red] text-sm">{errors.dropoffLocation}</p>
+                )}
               </div>
             </div>
           </div>
@@ -437,6 +502,7 @@ const Bookings = () => {
                   type="radio"
                   name="dateTimeOption"
                   value="asap"
+                  ref={dateTimeOptionRef}
                   checked={formData.dateTimeOption === "asap"}
                   onChange={handleChange}
                   className="text-orange-500"
@@ -454,6 +520,9 @@ const Bookings = () => {
                 <span>Schedule</span>
               </label>
             </div>
+            {errors.dateTimeOption && (
+              <p className="text-[red] text-sm">{errors.dateTimeOption}</p>
+            )}
             {formData.dateTimeOption === "schedule" && (
               <div className="flex space-x-4">
                 <input
@@ -496,6 +565,7 @@ const Bookings = () => {
                 </label>
                 <select
                   name="year"
+                  ref={yearRef}
                   value={formData.year}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
@@ -508,6 +578,9 @@ const Bookings = () => {
                     </option>
                   ))}
                 </select>
+                {errors.year && (
+                  <p className="text-[red] text-sm">{errors.year}</p>
+                )}
               </div>
               <div className="flex-1">
                 <label htmlFor="make" className="block">
@@ -515,6 +588,7 @@ const Bookings = () => {
                 </label>
                 <select
                   name="make"
+                  ref={makeRef}
                   value={formData.make}
                   onChange={handleChange}
                   className="w-full p-2 border border-gray-300 rounded-md"
@@ -527,12 +601,16 @@ const Bookings = () => {
                   <option value="Honda">Honda</option>
                   <option value="Ford">Ford</option>
                 </select>
+                {errors.make && (
+                  <p className="text-[red] text-sm">{errors.make}</p>
+                )}
               </div>
               <div className="flex-1">
                 <label htmlFor="model" className="block">
                   Model
                 </label>
                 <select
+                  ref={modelRef}
                   name="model"
                   value={formData.model}
                   onChange={handleChange}
@@ -546,6 +624,9 @@ const Bookings = () => {
                   <option value="E-Class">E-Class</option>
                   <option value="F-150">F-150</option>
                 </select>
+                {errors.model && (
+                  <p className="text-[red] text-sm">{errors.model}</p>
+                )}
               </div>
             </div>
             <label htmlFor="pictures" className="block">
@@ -569,6 +650,7 @@ const Bookings = () => {
               <p className="option-label">Missing or Broken Axle or Wheel?</p>
               <label className="flex items-center space-x-2">
                 <input
+                  ref={brokenAxleRef}
                   type="radio"
                   name="brokenAxle"
                   value="50"
@@ -580,6 +662,7 @@ const Bookings = () => {
               </label>
               <label className="flex items-center space-x-2">
                 <input
+                  ref={brokenAxleRef}
                   type="radio"
                   name="brokenAxle"
                   value="0"
@@ -590,10 +673,14 @@ const Bookings = () => {
                 <span>No</span>
               </label>
             </div>
+            {errors.brokenAxle && (
+              <p className="text-[red] text-sm">{errors.brokenAxle}</p>
+            )}
             <div className="flex space-x-4">
               <p className="option-label">Vehicle in Parking Garage?</p>
               <label className="flex items-center space-x-2">
                 <input
+                  ref={parkingGarageRef}
                   type="radio"
                   name="parkingGarage"
                   value="40"
@@ -605,6 +692,7 @@ const Bookings = () => {
               </label>
               <label className="flex items-center space-x-2">
                 <input
+                  ref={parkingGarageRef}
                   type="radio"
                   name="parkingGarage"
                   value="0"
@@ -615,6 +703,9 @@ const Bookings = () => {
                 <span>No</span>
               </label>
             </div>
+            {errors.parkingGarage && (
+              <p className="text-[red] text-sm">{errors.parkingGarage}</p>
+            )}
           </div>
           <h1 className="font-bold text-3xl">
             Total Cost: {totalCost?.toFixed(2)} $
@@ -622,43 +713,61 @@ const Bookings = () => {
           <hr className="text-gray-500" />
           <h2 className="text-3xl font-bold">Contact Information</h2>
           <div className="flex flex-col items-center w-full gap-5 md:flex-row">
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="p-2 border border-gray-300 rounded-md w-full"
-            />
-            <select
-              id="countryCode"
-              name="countryCode"
-              value={formData.countryCode}
-              onChange={handleChange}
-              required
-              className="p-2 border border-gray-300 rounded-md w-full"
-            >
-              <option value="+1">+1 (USA)</option>
-              <option value="+44">+44 (UK)</option>
-              <option value="+971">+971 (UAE)</option>
-              <option value="+962">+962 (Jordan)</option>
-              <option value="+20">+20 (Egypt)</option>
-              <option value="+91">+91 (India)</option>
-              <option value="+81">+81 (Japan)</option>
-              <option value="+61">+61 (Australia)</option>
-            </select>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              placeholder="Phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              className="p-2 border border-gray-300 rounded-md w-full"
-            />
+            <div className="w-full">
+              <input
+                ref={nameRef}
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="p-2 border border-gray-300 rounded-md w-full"
+              />
+              {errors.name && (
+                <p className="text-[red] text-sm">{errors.name}</p>
+              )}
+            </div>
+            <div className="w-full">
+              <select
+                ref={countryCodeRef}
+                id="countryCode"
+                name="countryCode"
+                value={formData.countryCode}
+                onChange={handleChange}
+                required
+                className="p-2 border border-gray-300 rounded-md w-full"
+              >
+                <option value="+1">+1 (USA)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+971">+971 (UAE)</option>
+                <option value="+962">+962 (Jordan)</option>
+                <option value="+20">+20 (Egypt)</option>
+                <option value="+91">+91 (India)</option>
+                <option value="+81">+81 (Japan)</option>
+                <option value="+61">+61 (Australia)</option>
+              </select>
+              {errors.countryCode && (
+                <p className="text-[red] text-sm">{errors.countryCode}</p>
+              )}
+            </div>
+            <div className="w-full">
+              <input
+                ref={phoneRef}
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                className="p-2 border border-gray-300 rounded-md w-full"
+              />
+              {errors.phone && (
+                <p className="text-[red] text-sm">{errors.phone}</p>
+              )}
+            </div>
           </div>
 
           <button
@@ -667,7 +776,7 @@ const Bookings = () => {
             type="button"
             className="w-full py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-600 text-[white] flex justify-center"
           >
-            {isLoadingOTP ? <Loader /> : "Send OTP"}
+            {isLoadingOTP ? <Loader /> : "Submit"}
           </button>
           {isOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
