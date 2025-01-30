@@ -11,7 +11,7 @@ const ContactUs = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 my-20 w-full px-[5px] md:px-[150px]">
         <div className="flex flex-col items-center justify-center gap-3">
           <Image
-            src={"/assets/location.png"}
+            src={"/assets/f1.svg"}
             alt={"location"}
             width={80}
             height={80}
@@ -22,7 +22,7 @@ const ContactUs = () => {
         </div>
         <div className="flex flex-col items-center justify-center gap-3">
           <Image
-            src={"/assets/call.png"}
+            src={"/assets/f3.svg"}
             alt={"location"}
             width={80}
             height={80}
@@ -33,7 +33,7 @@ const ContactUs = () => {
         </div>
         <div className="flex flex-col items-center justify-center gap-3">
           <Image
-            src={"/assets/mail.png"}
+            src={"/assets/f2.svg"}
             alt={"location"}
             width={80}
             height={80}
@@ -44,7 +44,7 @@ const ContactUs = () => {
         </div>
         <div className="flex flex-col items-center justify-center gap-3">
           <Image
-            src={"/assets/callanytime.png"}
+            src={"/assets/f4.svg"}
             alt={"location"}
             width={80}
             height={80}

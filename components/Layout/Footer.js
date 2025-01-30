@@ -73,19 +73,31 @@ const Footer = () => {
             </p>
             <ul className="text-black-500 flex flex-col items-center justify-center gap-3 w-full">
               <li className="flex  items-center gap-3 w-full">
-                <img src="/assets/f1.png" alt="location" />
+                <img
+                  src="/assets/f1.svg"
+                  alt="location"
+                  className="w-10 h-10"
+                />
                 <p>R4RW+9V Dallas, TX, USA</p>
               </li>
               <li className="flex  items-start gap-3 w-full">
-                <img src="/assets/f2.png" alt="email" />
+                <img src="/assets/f2.svg" alt="email" className="w-10 h-10" />
                 <p>info@nashamatech.tech</p>
               </li>
               <li className="flex  items-start gap-3 w-full">
-                <img src="/assets/f3.png" alt="phone number" />
+                <img
+                  src="/assets/f3.svg"
+                  alt="phone number"
+                  className="w-10 h-10"
+                />
                 <p>+1 (888) 713-5401</p>
               </li>
               <li className="flex  items-start gap-3 w-full">
-                <img src="/assets/f4.png" alt="24/7 availability" />
+                <img
+                  src="/assets/f4.svg"
+                  alt="24/7 availability"
+                  className="w-10 h-10"
+                />
                 <p>24/7 hours available</p>
               </li>
             </ul>

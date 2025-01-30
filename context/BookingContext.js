@@ -3,34 +3,33 @@ import { vehicleType } from "../constants/constants";
 import { services } from "../constants/constants";
 
 export const BookingContext = createContext();
-
+const initialFormData = {
+  pickupLocation: { address: "", geometry: null },
+  dropoffLocation: { address: "", geometry: null },
+  dateTimeOption: "asap",
+  serviceDate: "",
+  serviceTime: "",
+  year: "",
+  make: "",
+  model: "",
+  brokenAxle: "0",
+  parkingGarage: "0",
+  pictures: [],
+  name: "",
+  countryCode: "+1",
+  phone: "",
+  selectedService: "Flatbed Towing",
+  vehicleType: "Car/SUV/Minivan",
+  vehicleOther: "",
+};
 export const BookingProvider = ({ children }) => {
   const [yearOptions, setYearOptions] = useState([]);
-  const [totalCost, setTotalCost] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [availableServices, setAvailableServices] = useState([]);
   const [selectedVehicleType, setSelectedVehicleType] = useState(
     vehicleType[0]
   );
-  const [formData, setFormData] = useState({
-    pickupLocation: { address: "", geometry: null },
-    dropoffLocation: { address: "", geometry: null },
-    dateTimeOption: "asap",
-    serviceDate: "",
-    serviceTime: "",
-    year: "",
-    make: "",
-    model: "",
-    brokenAxle: "0",
-    parkingGarage: "0",
-    pictures: [],
-    name: "",
-    countryCode: "+1",
-    phone: "",
-    selectedService: "Flatbed Towing",
-    vehicleType: "Car/SUV/Minivan",
-    vehicleOther: "",
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   const [selectedService, setSelectedService] = useState(
     formData.selectedService
@@ -54,7 +53,16 @@ export const BookingProvider = ({ children }) => {
       selectedService: formData.selectedService, // Reset service when vehicle type changes
     }));
   };
-
+  const resetFormData = () => {
+    setFormData(initialFormData);
+    setSelectedService(initialFormData.selectedService);
+    setSelectedVehicleType(vehicleType[0]);
+    setAvailableServices(
+      services.filter((service) =>
+        vehicleType[0].supportedServices.includes(service.value)
+      )
+    );
+  };
   // const handleServiceSelection = (service) => {
   //   setFormData((prev) => ({
   //     ...prev,
@@ -90,7 +98,6 @@ export const BookingProvider = ({ children }) => {
       value={{
         formData,
         setFormData,
-        totalCost,
         selectedService,
         setSelectedService,
         yearOptions,
@@ -99,9 +106,9 @@ export const BookingProvider = ({ children }) => {
         isLoading,
         setSelectedVehicleType,
         setIsLoading,
-        setTotalCost,
         handleVehicleTypeChange,
         selectedVehicleType,
+        resetFormData,
       }}
     >
       {children}

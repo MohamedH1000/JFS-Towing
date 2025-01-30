@@ -8,7 +8,7 @@ const Testimoni = ({
   listTestimoni = [
     {
       name: "1",
-      image: "/assets/w1.png",
+      image: "/assets/w12.svg",
       city: "Warsaw",
       country: "Poland",
       rating: "4.5",
@@ -17,7 +17,7 @@ const Testimoni = ({
     },
     {
       name: "2",
-      image: "/assets/w2.png",
+      image: "/assets/w22.svg",
       city: "Warsaw",
       country: "Poland",
       rating: "4.5",
@@ -25,7 +25,7 @@ const Testimoni = ({
     },
     {
       name: "3",
-      image: "/assets/w3.png",
+      image: "/assets/w23.svg",
       city: "Warsaw",
       country: "Poland",
       rating: "4.5",

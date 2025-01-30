@@ -95,14 +95,14 @@ const about = () => {
               </motion.div>
             </ScrollAnimationWrapper>
           </div>
-          <div className="mt-15 w-full bg-[url(/assets/redy-help.png)] py-10">
-            <h1 className="text-4xl font-bold text-[white] text-center">
+          <div className="mt-15 w-full bg-[url(/assets/we_are_ready.jpg)] bg-cover bg-center py-10">
+            <h1 className="text-4xl font-bold text-[black] text-center">
               We are Ready
             </h1>
-            <h1 className="text-5xl font-bold text-[white] mt-4 text-center">
+            <h1 className="text-5xl font-bold text-[black] mt-4 text-center">
               <span className="text-orange-500">24 hours</span> to help you
             </h1>
-            <p className="mt-[50px] text-[white] px-[5px] md:px-[150px] text-center">
+            <p className="mt-[50px] text-[black] px-[5px] md:px-[150px] text-center">
               At JFS Towing, our goal is to revolutionize the towing and
               roadside assistance industry by harnessing the power of modern
               technology. We aim to build a seamless platform that connects tow
@@ -122,11 +122,11 @@ const about = () => {
               </button>
             </div>
           </div>
-          <div className="mt-15 w-full bg-[url(/assets/service_provide_bg.jpg)] py-10">
-            <h1 className="font-bold text-5xl text-center text-[white]">
+          <div className="mt-15 w-full bg-[url(/assets/service_provide_bg.png)] bg-cover bg-center py-10">
+            <h1 className="font-bold text-5xl text-center text-[black]">
               Services we <span className="text-orange-500">Provide</span>
             </h1>
-            <p className="text-[white] text-center text-md mt-10">
+            <p className="text-[black] text-center text-md mt-10">
               Select from the services we offer and get back on the road
             </p>
             <ScrollAnimationWrapper className=" flex flex-col py-12 mb-10 px-[10px] lg:px-[150px]">
@@ -142,12 +142,12 @@ const about = () => {
                       <div
                         className={`bg-[white] border-[2px]
                         border-[#f53855] cursor-pointer rounded-full
-                        w-[100px] h-[100px] flex flex-col
+                        w-[100px] h-[100px] flex flex-col p-4
                   items-center justify-center gap-3 text-[black] font-bold`}
                       >
                         {service.icon}
                       </div>
-                      <p className="mt-3 text-[white]">{service.name}</p>
+                      <p className="mt-3 text-[black]">{service.name}</p>
                     </div>
                   ))}
                 </Slider>
@@ -179,7 +179,7 @@ const about = () => {
                 variants={scrollAnimation}
               >
                 <Image
-                  src="/assets/offer-right.png"
+                  src="/assets/whyTowing.jpg"
                   alt="offer right"
                   quality={100}
                   height={414}

@@ -19,7 +19,6 @@ const Bookings = () => {
   const {
     formData,
     setFormData,
-    totalCost,
     yearOptions,
     isLoading,
     setIsLoading,
@@ -28,16 +27,19 @@ const Bookings = () => {
     selectedVehicleType,
     setSelectedService,
     handleVehicleTypeChange,
-    setTotalCost,
+    resetFormData,
   } = useContext(BookingContext);
   // const [availableServices, setAvailableServices] = useState([]);
   const [otp, setOtp] = useState("");
+  // console.log(formData, "form data");
+  // console.log(totalCost, "total cost");
   // console.log(otp, "otp number");
   const [isOpen, setIsOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoadingOTP, setIsLoadingOTP] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
 
+  const [isComplete, setIsComplete] = useState(false);
+  const [totalCost, setTotalCost] = useState(0);
   const pickupLocationRef = useRef(null);
   const dropoffLocationRef = useRef(null);
   const dateTimeOptionRef = useRef(null);
@@ -89,7 +91,9 @@ const Bookings = () => {
   //     selectedService: formData.selectedService, // Reset service when vehicle type changes
   //   }));
   // };
-
+  useEffect(() => {
+    resetFormData();
+  }, []);
   const handleServiceSelection = (service) => {
     setSelectedService(service);
     setFormData((prev) => ({
@@ -448,7 +452,7 @@ const Bookings = () => {
                         ? "bg-[#142247] text-[white]"
                         : "border-[#f53855] bg-[white]"
                     } cursor-pointer rounded-full w-[100px] h-[100px] flex flex-col 
-                  items-center justify-center gap-3 text-[black] font-bold`}
+                  items-center justify-center gap-3 text-[black] font-bold p-4 overflow-hidden`}
                   >
                     {service.icon}
                   </div>
