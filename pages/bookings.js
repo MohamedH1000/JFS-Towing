@@ -191,8 +191,6 @@ const Bookings = () => {
   // دالة حساب المسافة
   const handleOtp = async (e) => {
     const requiredFields = [
-      { field: "pickupLocation", ref: pickupLocationRef },
-      { field: "dropoffLocation", ref: dropoffLocationRef },
       { field: "dateTimeOption", ref: dateTimeOptionRef },
       { field: "year", ref: yearRef },
       { field: "make", ref: makeRef },
@@ -235,13 +233,18 @@ const Bookings = () => {
 
     // Validate dropoff location
     if (
-      !formData.dropoffLocation.address ||
-      !formData.dropoffLocation.geometry
+      selectedService === "Flatbed Towing" ||
+      selectedService === "Wheel-Lift Towing"
     ) {
-      newErrors.dropoffLocation =
-        "Dropoff location address and geometry are required";
-      if (dropoffLocationRef.current) {
-        dropoffLocationRef.current.focus();
+      if (
+        !formData.dropoffLocation.address ||
+        !formData.dropoffLocation.geometry
+      ) {
+        newErrors.dropoffLocation =
+          "Dropoff location address and geometry are required";
+        if (dropoffLocationRef.current) {
+          dropoffLocationRef.current.focus();
+        }
       }
     }
 
