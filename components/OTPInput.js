@@ -48,8 +48,10 @@ const OTPInput = ({ length = 6, onChange, setIsComplete }) => {
       {otp.map((digit, index) => (
         <input
           key={index}
-          type="text"
+          type="tel"
           maxLength="1"
+          inputMode="numeric"
+          pattern="[0-9]*"
           value={digit}
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}

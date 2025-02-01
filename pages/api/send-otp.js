@@ -1,3 +1,5 @@
+import { storeOTP } from "./otpService";
+
 const twilio = require("twilio");
 
 export default async function handler(req, res) {
@@ -13,6 +15,7 @@ export default async function handler(req, res) {
     from: process.env.TWILIO_PHONE_NUMBER,
     to: `${countryCode}${phone}`, // Combines country code and phone
   });
+  storeOTP(phone, otp);
 
   res.status(200).json({ success: true });
 }

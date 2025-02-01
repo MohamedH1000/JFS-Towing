@@ -39,6 +39,9 @@ li.custom-list:before {
   top: -0.35em;
   @apply absolute block;
 }
+.blur-background {
+  backdrop-filter: blur(8px); /* Adjust the blur intensity */
+}
 li.circle-check:before {
   background-image: url("/assets/Icon/checklist.svg");
   left: -0.7em;

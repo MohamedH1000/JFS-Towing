@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { vehicleType } from "../constants/constants";
 import { BookingContext } from "../context/BookingContext";
 import OTPInput from "../components/OTPInput";
+import toast from "react-hot-toast";
 
 const PickUpLocation = dynamic(() => import("./components/PickUpLocation"), {
   ssr: false,
@@ -320,7 +321,7 @@ const Bookings = () => {
           "OTP verification failed:",
           await verifyOTPResponse.text()
         );
-        alert("Invalid OTP. Please try again.");
+        toast.error("OTP Number is not true");
         return;
       }
       const stripe = await stripePromise;
@@ -786,17 +787,23 @@ const Bookings = () => {
             {isLoadingOTP ? <Loader /> : "Submit"}
           </button>
           {isOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-              <div className="bg-[white] p-6 rounded shadow-xl border-[1px]">
+            <div
+              className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm"
+              onClick={() => setIsOpen(false)} // Close modal when clicking outside
+            >
+              <div
+                className="bg-[white] p-6 rounded-md shadow-xl border-[1px]"
+                onClick={(e) => e.stopPropagation()} // Prevent click inside modal from closing it
+              >
                 <h2 className="text-lg font-bold mb-2">Enter OTP Number</h2>
                 <OTPInput
                   length={6}
                   onChange={setOtp}
                   setIsComplete={setIsComplete}
                 />
-                <div className="flex items-center justify-end gap-3  mt-5">
+                <div className="flex items-center justify-end gap-3 mt-5">
                   <p className="font-bold text-[black]">
-                    Don't recieve an OTP number?
+                    Don't receive an OTP number?
                   </p>
                   <p
                     className="font-bold underline text-orange-500 cursor-pointer text-right"
@@ -808,16 +815,14 @@ const Bookings = () => {
                 <div className="flex justify-end mt-4">
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="mr-2 text-gray-600 shadow-md bg-orange-500 
-                    rounded-md text-[white] py-2 px-4"
+                    className="mr-2 text-gray-600 shadow-md bg-orange-500 rounded-md text-[white] py-2 px-4"
                   >
                     Cancel
                   </button>
                   <button
-                    disabled={!isComplete || isLoading} // Disable button if OTP is not fully entered
+                    disabled={!isComplete || isLoading}
                     type="submit"
-                    className={`bg-blue-500 text-white bg-orange-500 
-                    rounded-md text-[white] py-2 px-4 disabled:bg-gray-400`}
+                    className={`bg-orange-500 rounded-md text-[white] py-2 px-4 disabled:bg-gray-400`}
                   >
                     {isLoading ? <Loader /> : "Submit"}
                   </button>

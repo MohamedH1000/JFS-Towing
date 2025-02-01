@@ -1,12 +1,13 @@
-export async function getStoredOTP(fullPhone) {
-  // Example implementation: Replace with actual database or cache logic
-  const otpStore = {
-    "+201006546448": "123456", // Example data
-  };
+// otpService.js
+const otpCache = new Map(); // In-memory cache for OTPs
 
-  if (!otpStore[fullPhone]) {
-    throw new Error(`OTP not found for phone number: ${fullPhone}`);
-  }
+// Store OTP in cache
+export const storeOTP = (phone, otp) => {
+  otpCache.set(phone, otp);
+  setTimeout(() => otpCache.delete(phone), 5 * 60 * 1000); // Auto-delete OTP after 5 minutes
+};
 
-  return otpStore[fullPhone];
-}
+// Retrieve OTP from cache
+export const getStoredOTP = (phone) => {
+  return otpCache.get(phone);
+};
