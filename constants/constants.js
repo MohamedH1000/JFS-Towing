@@ -79,6 +79,8 @@ export const services = [
     img: "/assets/flatbed.jpg",
     description:
       "Flatbed towing is the safest and most secure method for transporting vehicles.",
+    homeDesc:
+      "Flatbed towing is the safest and most secure method for transporting vehicles. Whether you’re searching for a towing near me option or need a reliable towing truck, flatbed towing ensures your vehicle is transported safely. If you need assistance from a tow truck near me, a towing company near me, or a trusted tow service near me, flatbed towing provides the most secure solution. Our towing service is designed to handle all types of vehicles, and we also offer tow truck service near me for quick roadside assistance. As a leading tow truck company, we ensure professional and efficient service. Additionally, our wrecker service is available to help with accident recoveries or vehicle breakdowns.",
   },
   {
     icon: (
@@ -138,6 +140,8 @@ export const services = [
     img: "/assets/wheel_lift.jpg",
     description:
       "Wheel-lift towing is a cost-effective and efficient solution for moving vehicles.",
+    homeDesc:
+      "Wheel-lift towing is a cost-effective and efficient solution for moving vehicles. If you're looking for a reliable towing company, our services provide a secure and affordable option. Whether you need truck towing near me or are searching for inexpensive towing near me, wheel-lift towing is a great choice. If you require assistance from a wrecker truck near me, our team is ready to help. We also offer near me towing service and near me tow truck options for quick roadside support. As a trusted tow company JFS, we ensure safe and efficient vehicle transport. Additionally, our wrecker service JFS is available for accident recovery and breakdown assistance.",
   },
   {
     icon: (
@@ -202,6 +206,8 @@ export const services = [
     img: "/assets/motorcycle.png",
     description:
       "Motorcycle towing requires specialized care to ensure your bike is transported safely and without damage.",
+    homeDesc:
+      "Motorcycle towing requires specialized care to ensure your bike is transported safely and without damage. If you need a reliable truck wrecker service near me, we provide expert towing solutions tailored for motorcycles. Our truck towing services near me ensure your bike is handled with care. Whether you're searching for a wrecker service close to me or need a trusted towing service JFS TX, we’ve got you covered. As a leading JFS tow truck company, we offer professional and secure transport. Our towing company JFS TX provides 24-hour towing to ensure assistance whenever you need it. Additionally, we use flatbed tow truck options for added safety and offer competitive tow truck prices for all towing needs.",
   },
   {
     icon: (
@@ -274,6 +280,8 @@ export const services = [
     img: "/assets/tire_change.jpg",
     description:
       "A flat tire can happen at any time, leaving you stranded on the side of the road. Our tire change service provides quick and efficient assistance to get you back on the road safely.",
+    homeDesc:
+      "A flat tire can happen at any time, leaving you stranded on the side of the road. If you need help fast, our towing near me service is here to assist. Our towing truck is equipped to handle roadside emergencies, ensuring you get back on the road safely. Whether you need a tow truck near me or a reliable towing company near me, we provide quick and efficient service. We also offer tow service near me for those unexpected breakdowns. Our towing service includes expert tire changes and roadside assistance. If you're searching for tow truck service near me, trust us to deliver fast and professional support. As a trusted tow truck company, we are committed to helping drivers in need.",
   },
   {
     icon: (
@@ -457,6 +465,8 @@ export const services = [
     img: "/assets/jump_start.jpg",
     description:
       "A dead battery can leave you stuck and frustrated. Our jump-start service is here to help! We’ll send a professional to your location to safely jump-start your vehicle and get it running again.",
+    homeDesc:
+      "A dead battery can leave you stuck and frustrated. Our wrecker service is here to provide fast and reliable assistance. As a trusted towing company, we offer professional truck towing near me to ensure you're never stranded for long. If you're searching for inexpensive towing near me, our affordable services can help. We also provide wrecker truck near me solutions to get your vehicle back on the road safely. Whether you need a near me towing service or a dependable near me tow truck, we’ve got you covered. As a leading tow company JFS, we guarantee quick response times and expert service to jump-start your vehicle and get you moving again.",
   },
   {
     icon: (
@@ -490,6 +500,8 @@ export const services = [
     img: "/assets/fuel_delivery.jpg",
     description:
       "Running out of fuel is an inconvenience that can happen to anyone. With our fuel delivery service, we’ll bring the right type of fuel directly to your location, whether you’re on the highway or in a parking lot.",
+    homeDesc:
+      "Running out of fuel is an inconvenience that can happen to anyone. With our fuel delivery service, we’ll bring the right type of fuel directly to your location, whether you’re on the highway or in a parking lot. If you're in need of a reliable wrecker service JFS, our team can quickly respond to your fuel delivery request. Whether you're searching for a truck wrecker service near me or truck towing services near me, we have the resources to help. We offer a wrecker service close to me for fast assistance, and our towing service JFS TX ensures you get the support you need. As a leading JFS tow truck company, we specialize in quick fuel delivery. With 24-hour towing services, we’re available around the clock. Additionally, we use flatbed tow truck options for safety, and our tow truck prices are designed to be competitive and affordable.",
   },
   {
     icon: (
@@ -523,6 +535,8 @@ export const services = [
     img: "/assets/vehicle_unlock.jpg",
     description:
       "Locked your keys inside your car? Don’t worry—our vehicle unlock service is here to help. ",
+    homeDesc:
+      "Locked your keys inside your car? Don’t worry—our vehicle unlock service is here to help. If you're searching for towing near me to assist with unlocking your vehicle, our team is ready to respond quickly. Whether you need a towing truck or are looking for a tow truck near me, we have the tools to get you back inside your car. Our towing company near me offers a full range of services, including a tow service near me for all types of roadside emergencies. We provide a comprehensive towing service and offer tow truck service near me for fast, reliable assistance. As a trusted tow truck company, we’re here to help you with all your vehicle needs, including wrecker service if necessary.",
   },
   {
     icon: (
@@ -572,6 +586,8 @@ export const services = [
     img: "/assets/winch_out.jpg",
     description:
       "If your vehicle is stuck in mud, sand, snow, or a ditch, our winch-out service can help. We use powerful winches and recovery equipment to safely pull your vehicle out of tough situations. ",
+    homeDesc:
+      "If your vehicle is stuck in mud, sand, snow, or a ditch, our winch-out service can help. We use powerful winches and recovery equipment to safely pull your vehicle out of tough situations. If you need assistance, our towing company offers reliable winch-out services to get you back on the road. Whether you’re searching for truck towing near me or inexpensive towing near me, we provide affordable solutions. Our wrecker truck near me is equipped to handle challenging recoveries, and we also offer near me towing service for quick response. As a leading tow company JFS, we specialize in winch-out services and vehicle recovery. If you're in need of a near me tow truck, or require wrecker service JFS or truck wrecker service near me, we’re here to help!",
   },
 ];
 
