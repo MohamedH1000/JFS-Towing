@@ -8,6 +8,7 @@ import { vehicleType } from "../constants/constants";
 import { BookingContext } from "../context/BookingContext";
 import OTPInput from "../components/OTPInput";
 import toast from "react-hot-toast";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const PickUpLocation = dynamic(() => import("./components/PickUpLocation"), {
   ssr: false,
@@ -38,7 +39,6 @@ const Bookings = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoadingOTP, setIsLoadingOTP] = useState(false);
-
   const [isComplete, setIsComplete] = useState(false);
   const [totalCost, setTotalCost] = useState(0);
   const pickupLocationRef = useRef(null);
@@ -54,6 +54,7 @@ const Bookings = () => {
   const phoneRef = useRef(null);
   const selectedServiceRef = useRef(null);
   const vehicleTypeRef = useRef(null);
+  const recaptchaRef = useRef();
   // console.log(formData.phone, "phone number");
   // console.log(selectedVehicleType, "selected Vehicle Type");
   const stripePromise = loadStripe(
@@ -284,6 +285,7 @@ const Bookings = () => {
       setIsLoadingOTP(false);
     }
   };
+
   const handleResend = async () => {
     const otpResponse = await fetch("/api/send-otp", {
       method: "POST",
@@ -301,29 +303,126 @@ const Bookings = () => {
 
     return otpResponse;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // await grecaptcha.enterprise.ready(); // Ensure reCAPTCHA is ready
+
+    const recaptchaValue = await grecaptcha.enterprise.execute(
+      process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+      { action: "submit" }
+    );
+    // console.log(recaptchaValue, "recaptchaValue");
+    if (!recaptchaValue) {
+      toast.error("Please complete the reCAPTCHA!");
+      return;
+    }
+    const requiredFields = [
+      { field: "dateTimeOption", ref: dateTimeOptionRef },
+      { field: "year", ref: yearRef },
+      { field: "make", ref: makeRef },
+      { field: "model", ref: modelRef },
+      { field: "brokenAxle", ref: brokenAxleRef },
+      { field: "parkingGarage", ref: parkingGarageRef },
+      { field: "name", ref: nameRef },
+      { field: "countryCode", ref: countryCodeRef },
+      { field: "phone", ref: phoneRef },
+      { field: "selectedService", ref: selectedServiceRef },
+      { field: "vehicleType", ref: vehicleTypeRef },
+    ];
+
+    let newErrors = {};
+
+    // Validate required fields
+    for (let { field, ref } of requiredFields) {
+      if (
+        !formData[field] ||
+        (Array.isArray(formData[field]) && formData[field].length === 0)
+      ) {
+        newErrors[field] = `${field} is required`;
+
+        // Focus on the first invalid field
+        if (ref.current) {
+          ref.current.focus();
+          break; // Stop after focusing on the first invalid field
+        }
+      }
+    }
+
+    // Validate pickup location
+    if (!formData.pickupLocation.address || !formData.pickupLocation.geometry) {
+      newErrors.pickupLocation =
+        "Pickup location address and geometry are required";
+      if (pickupLocationRef.current) {
+        pickupLocationRef.current.focus();
+      }
+    }
+
+    // Validate dropoff location
+    if (
+      selectedService === "Flatbed Towing" ||
+      selectedService === "Wheel-Lift Towing"
+    ) {
+      if (
+        !formData.dropoffLocation.address ||
+        !formData.dropoffLocation.geometry
+      ) {
+        newErrors.dropoffLocation =
+          "Dropoff location address and geometry are required";
+        if (dropoffLocationRef.current) {
+          dropoffLocationRef.current.focus();
+        }
+      }
+    }
+
+    // If there are errors, set them and stop further processing
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Clear errors if validation passes
+    setErrors({});
     setIsLoading(true);
 
     try {
-      const verifyOTPResponse = await fetch("/api/verify-otp", {
+      const verifyRecaptchaResponse = await fetch("/api/verify-recaptcha", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          countryCode: formData.countryCode,
-          phone: formData.phone,
-          otp: otp,
-        }),
+        body: JSON.stringify({ recaptcha: recaptchaValue }),
       });
 
-      if (!verifyOTPResponse.ok) {
-        console.error(
-          "OTP verification failed:",
-          await verifyOTPResponse.text()
-        );
-        toast.error("OTP Number is not true");
+      const recaptchaResult = await verifyRecaptchaResponse.json();
+
+      if (recaptchaResult.score <= 0.5) {
+        toast.error("Can't proceed to the checkout page");
         return;
       }
+      // console.log(recaptchaResult.score, "score");
+      if (!recaptchaResult.success) {
+        toast.error("reCAPTCHA verification failed. Please try again.");
+        return;
+      }
+
+      // const verifyOTPResponse = await fetch("/api/verify-otp", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     countryCode: formData.countryCode,
+      //     phone: formData.phone,
+      //     otp: otp,
+      //   }),
+      // });
+
+      // if (!verifyOTPResponse.ok) {
+      //   console.error(
+      //     "OTP verification failed:",
+      //     await verifyOTPResponse.text()
+      //   );
+      //   toast.error("OTP Number is not true");
+      //   return;
+      // }
       const stripe = await stripePromise;
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -776,15 +875,19 @@ const Bookings = () => {
                 <p className="text-[red] text-sm">{errors.phone}</p>
               )}
             </div>
+            {/* <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+            /> */}
           </div>
 
           <button
-            onClick={handleOtp}
-            disabled={isLoadingOTP}
+            onClick={handleSubmit}
+            disabled={isLoading}
             type="button"
             className="w-full py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-600 text-[white] flex justify-center"
           >
-            {isLoadingOTP ? <Loader /> : "Submit"}
+            {isLoading ? <Loader /> : "Submit"}
           </button>
           {isOpen && (
             <div
