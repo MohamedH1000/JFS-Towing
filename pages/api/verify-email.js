@@ -8,11 +8,11 @@ export default async function handler(req, res) {
       .json({ success: false, message: "Method not allowed" });
   }
 
-  const { phone, otp } = req.body;
+  const { email, otp } = req.body;
 
   try {
     // Retrieve the stored OTP for the given phone number
-    const storedOTP = await getStoredOTP(phone);
+    const storedOTP = await getStoredOTP(email);
 
     // Check if the OTP matches
     if (String(storedOTP) === String(otp)) {
