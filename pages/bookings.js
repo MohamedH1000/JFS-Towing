@@ -8,7 +8,6 @@ import { vehicleType } from "../constants/constants";
 import { BookingContext } from "../context/BookingContext";
 import OTPInput from "../components/OTPInput";
 import toast from "react-hot-toast";
-import ReCAPTCHA from "react-google-recaptcha";
 
 const PickUpLocation = dynamic(() => import("./components/PickUpLocation"), {
   ssr: false,
@@ -47,6 +46,7 @@ const Bookings = () => {
   const yearRef = useRef(null);
   const makeRef = useRef(null);
   const modelRef = useRef(null);
+  const emailRef = useRef(null);
   const brokenAxleRef = useRef(null);
   const parkingGarageRef = useRef(null);
   const nameRef = useRef(null);
@@ -204,12 +204,15 @@ const Bookings = () => {
       { field: "brokenAxle", ref: brokenAxleRef },
       { field: "parkingGarage", ref: parkingGarageRef },
       { field: "name", ref: nameRef },
-      { field: "countryCode", ref: countryCodeRef },
-      { field: "phone", ref: phoneRef },
+      // { field: "countryCode", ref: countryCodeRef },
+      // { field: "phone", ref: phoneRef },
+      { field: "email", ref: emailRef },
       { field: "selectedService", ref: selectedServiceRef },
       { field: "vehicleType", ref: vehicleTypeRef },
     ];
-
+    toast("We have sent OTP to your email", {
+      icon: "📧",
+    });
     let newErrors = {};
 
     // Validate required fields
@@ -267,18 +270,17 @@ const Bookings = () => {
     setIsOpen(true);
     try {
       // Your OTP sending logic here
-      //   const otpResponse = await fetch("/api/send-otp", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     phone: formData.phone,
-      //     countryCode: formData.countryCode,
-      //   }),
-      // });
-      // if (!otpResponse.ok) {
-      //   console.error("Failed to send OTP:", await otpResponse.text());
-      //   return;
-      // }
+      const otpResponse = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+        }),
+      });
+      if (!otpResponse.ok) {
+        console.error("Failed to send OTP:", await otpResponse.text());
+        return;
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -287,12 +289,11 @@ const Bookings = () => {
   };
 
   const handleResend = async () => {
-    const otpResponse = await fetch("/api/send-otp", {
+    const otpResponse = await fetch("/api/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        phone: formData.phone,
-        countryCode: formData.countryCode,
+        email: formData.email,
       }),
     });
 
@@ -300,7 +301,7 @@ const Bookings = () => {
       console.error("Failed to send OTP:", await otpResponse.text());
       return;
     }
-
+    toast.success("OTP Sent to your email");
     return otpResponse;
   };
 
@@ -326,8 +327,9 @@ const Bookings = () => {
       { field: "brokenAxle", ref: brokenAxleRef },
       { field: "parkingGarage", ref: parkingGarageRef },
       { field: "name", ref: nameRef },
-      { field: "countryCode", ref: countryCodeRef },
-      { field: "phone", ref: phoneRef },
+      // { field: "countryCode", ref: countryCodeRef },
+      // { field: "phone", ref: phoneRef },
+      { field: "email", ref: emailRef },
       { field: "selectedService", ref: selectedServiceRef },
       { field: "vehicleType", ref: vehicleTypeRef },
     ];
@@ -405,24 +407,23 @@ const Bookings = () => {
         return;
       }
 
-      // const verifyOTPResponse = await fetch("/api/verify-otp", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     countryCode: formData.countryCode,
-      //     phone: formData.phone,
-      //     otp: otp,
-      //   }),
-      // });
+      const verifyOTPResponse = await fetch("/api/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          otp: otp,
+        }),
+      });
 
-      // if (!verifyOTPResponse.ok) {
-      //   console.error(
-      //     "OTP verification failed:",
-      //     await verifyOTPResponse.text()
-      //   );
-      //   toast.error("OTP Number is not true");
-      //   return;
-      // }
+      if (!verifyOTPResponse.ok) {
+        console.error(
+          "OTP verification failed:",
+          await verifyOTPResponse.text()
+        );
+        toast.error("OTP Number is not true");
+        return;
+      }
       const stripe = await stripePromise;
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -836,7 +837,7 @@ const Bookings = () => {
                 <p className="text-[red] text-sm">{errors.name}</p>
               )}
             </div>
-            <div className="w-full">
+            {/* <div className="w-full">
               <select
                 ref={countryCodeRef}
                 id="countryCode"
@@ -873,21 +874,37 @@ const Bookings = () => {
               />
               {errors.phone && (
                 <p className="text-[red] text-sm">{errors.phone}</p>
-              )}
-            </div>
+              )} */}
+            {/* </div> */}
             {/* <ReCAPTCHA
               ref={recaptchaRef}
               sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
             /> */}
+            <div className="w-full">
+              <input
+                ref={emailRef}
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="p-2 border border-gray-300 rounded-md w-full"
+              />
+              {errors.email && (
+                <p className="text-[red] text-sm">{errors.email}</p>
+              )}
+            </div>
           </div>
 
           <button
-            onClick={handleSubmit}
-            disabled={isLoading}
+            onClick={handleOtp}
+            disabled={isLoadingOTP}
             type="button"
             className="w-full py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-600 text-[white] flex justify-center"
           >
-            {isLoading ? <Loader /> : "Submit"}
+            {isLoadingOTP ? <Loader /> : "Submit"}
           </button>
           {isOpen && (
             <div
